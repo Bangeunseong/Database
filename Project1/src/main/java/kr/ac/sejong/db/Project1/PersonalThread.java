@@ -13,7 +13,7 @@ public class PersonalThread extends Thread {
 			localFund += 1;
 			P3.fund = localFund;
 			//Release
-			P3.sem.release();
+			P3.sem.release(); 
 			
 			//Using synchronized
 			//P3.addFund(1);
