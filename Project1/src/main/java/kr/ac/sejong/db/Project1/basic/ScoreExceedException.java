@@ -1,4 +1,4 @@
-package kr.ac.sejong.db.Project1;
+package kr.ac.sejong.db.Project1.basic;
 
 public class ScoreExceedException extends Exception {
 	public ScoreExceedException() {}

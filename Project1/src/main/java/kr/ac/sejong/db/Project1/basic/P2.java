@@ -1,4 +1,4 @@
-package kr.ac.sejong.db.Project1;
+package kr.ac.sejong.db.Project1.basic;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

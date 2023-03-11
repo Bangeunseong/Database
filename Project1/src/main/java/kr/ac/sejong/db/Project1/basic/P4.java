@@ -1,4 +1,4 @@
-package kr.ac.sejong.db.Project1;
+package kr.ac.sejong.db.Project1.basic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -91,7 +91,7 @@ public class P4 {
 		System.out.println(sum(new int[] {1,3,5}));
 		System.out.println(sum(new int[] {2,3,4,5}));
 		
-		//Exception
+		//About Exception
 		Scanner scan = new Scanner(System.in);
 		int base = 10, input = scan.nextInt();
 		try {

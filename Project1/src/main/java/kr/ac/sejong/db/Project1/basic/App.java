@@ -1,4 +1,4 @@
-package kr.ac.sejong.db.Project1;
+package kr.ac.sejong.db.Project1.basic;
 
 /**
  * Hello world!
