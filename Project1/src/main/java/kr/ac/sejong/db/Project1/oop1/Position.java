@@ -1,4 +1,4 @@
-package kr.ac.sejong.db.Project1.oop;
+package kr.ac.sejong.db.Project1.oop1;
 
 public class Position {
 	//Field
