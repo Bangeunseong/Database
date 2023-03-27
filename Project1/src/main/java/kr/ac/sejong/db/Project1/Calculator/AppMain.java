@@ -11,19 +11,28 @@ public class AppMain {
 	public static String mainExpression;
 	public static double mainMemory = 0;
 	
+	//Return boolean if it is operator
+	public static boolean isOperator(Character val) {
+		if(val.equals('/') || val.equals('*') || val.equals('%') 
+				|| val.equals('+') || val.equals('-')) return true;
+		return false;
+	}
+	//Return operators priority
 	public static int returnPriority(Character val) {
 		if(val.equals('/') || val.equals('*') || val.equals('%')) return 3;
 		else if(val.equals('+') || val.equals('-')) return 4;
 		else return -1;
 	}
-	
+	//Return list of operands
 	public static List<Double> returnOperands(){
 		List<Double> operands = new ArrayList<>();
 		String[] operandList = mainExpression.split("\\-|\\*|\\/|\\%|\\+|\\(|\\)");
-		for(String data : operandList) operands.add(Double.valueOf(data.trim()));
+		for(String data : operandList) {
+			if(!data.isEmpty()) operands.add(Double.valueOf(data));
+		}
 		return operands;
 	}
-	
+	//Return list of operators
 	public static List<Character> returnOperators(){
 		List<Character> operators = new ArrayList<>();
 		for(int i = 0; i < mainExpression.length(); i++) {
@@ -32,7 +41,7 @@ public class AppMain {
 		}
 		return operators;
 	}
-	
+	//Return double value by calculating formula
 	public static double Calculate(List<Double> operands, List<Character> operators) {	//Fix it!!!
 		Stack<Double> operands_s = new Stack<>();
 		Stack<Character> operators_s = new Stack<>();
@@ -40,8 +49,26 @@ public class AppMain {
 		operands_s.push(operands.remove(0));
 		while(!operands.isEmpty()) {
 			//When operators are not in stack
-			if(operators_s.isEmpty()) {operators_s.push(operators.remove(0));}
-			
+			if(operators_s.isEmpty() && isOperator(operators.get(0))) {operators_s.push(operators.remove(0));}
+			else if(operators.get(0).equals('(')) {
+				operators_s.push(operators.remove(0));
+				if(isOperator(operators.get(0))) {
+					operands_s.push(operands.remove(0)); operators_s.push(operators.remove(0));
+				}
+			}
+			else if(operators.get(0).equals(')')) {
+				operators.remove(0); operands_s.push(operands.remove(0));
+				Character op = operators_s.pop();
+				while(!op.equals('(')) {
+					double val2 = operands_s.pop(); double val1 = operands_s.pop();
+					if(op.equals('+')) val1 += val2;
+					else if(op.equals('-')) val1 -= val2;
+					else if(op.equals('*')) val1 *= val2;
+					else if(op.equals('/')) val1 /= val2;
+					else if(op.equals('%')) val1 %= val2;
+					operands_s.push(val1); op = operators_s.pop();
+				}
+			}
 			//When file ends!! Get Leftover operand and calculate
 			else if(operators.isEmpty()) {	
 				Character op = operators_s.pop(); double val = operands_s.pop();
