@@ -6,123 +6,99 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 public class AppMain {
-	public static String mainExpression;
+	public static String mainExp;
 	public static double mainMemory = 0;
 	
 	//Return boolean if it is operator
-	public static boolean isOperator(Character val) {
-		if(val.equals('/') || val.equals('*') || val.equals('%') 
-				|| val.equals('+') || val.equals('-')) return true;
+	public static boolean isOperand(char val) {
+		if(val >= '0' && val <= '9') return true;
+		else if(val == '.') return true;
 		return false;
 	}
 	//Return operators priority
 	public static int returnPriority(Character val) {
-		if(val.equals('/') || val.equals('*') || val.equals('%')) return 3;
-		else if(val.equals('+') || val.equals('-')) return 4;
+		if(val.equals('(')) return 2;
+		else if(val.equals('+') || val.equals('-')) return 3;
+		else if(val.equals('/') || val.equals('*') || val.equals('%')) return 4;
 		else return -1;
 	}
-	//Return list of operands
-	public static List<Double> returnOperands(){
-		List<Double> operands = new ArrayList<>();
-		String[] operandList = mainExpression.split("\\-|\\*|\\/|\\%|\\+|\\(|\\)");
-		for(String data : operandList) {
-			if(!data.isEmpty()) operands.add(Double.valueOf(data));
-		}
-		return operands;
-	}
-	//Return list of operators
-	public static List<Character> returnOperators(){
-		List<Character> operators = new ArrayList<>();
-		for(int i = 0; i < mainExpression.length(); i++) {
-			if((mainExpression.charAt(i) < '0' || mainExpression.charAt(i) > '9') && mainExpression.charAt(i) != ' ')
-				operators.add(Character.valueOf(mainExpression.charAt(i)));
-		}
-		return operators;
-	}
-	//Return double value by calculating formula
-	public static double Calculate(List<Double> operands, List<Character> operators) {	//Fix it!!!
-		Stack<Double> operands_s = new Stack<>();
-		Stack<Character> operators_s = new Stack<>();
+	
+	public static double doOperator(String op, Double v1, Double v2) {
 		
-		operands_s.push(operands.remove(0));
-		while(!operands.isEmpty()) {
-			//When operators are not in stack
-			if(operators_s.isEmpty() && isOperator(operators.get(0))) {operators_s.push(operators.remove(0));}
-			else if(operators.get(0).equals('(')) {
-				operators_s.push(operators.remove(0));
-				if(isOperator(operators.get(0))) {
-					operands_s.push(operands.remove(0)); operators_s.push(operators.remove(0));
+		if(op.equals("+")) return v1 + v2;
+		else if(op.equals("-")) return v1 - v2;
+		else if(op.equals("*")) return v1 * v2;
+		else if(op.equals("/")) return v1 / v2;
+		else if(op.equals("%")) return v1 % v2;
+		return -1;
+	}
+	
+	public static List<String> convert() {
+		List<String> result = new ArrayList<>();
+		Stack<Character> s = new Stack<>();
+		
+		int ind = 0;
+		while(ind < mainExp.length()) {
+			StringBuffer tmp = new StringBuffer();
+			if(isOperand(mainExp.charAt(ind))) {
+				while(ind < mainExp.length() && isOperand(mainExp.charAt(ind))) {
+					tmp.append(mainExp.charAt(ind++));
 				}
+				result.add(tmp.toString());
+				//System.out.println("Check operand");
 			}
-			else if(operators.get(0).equals(')')) {
-				operators.remove(0); operands_s.push(operands.remove(0));
-				Character op = operators_s.pop();
-				while(!op.equals('(')) {
-					double val2 = operands_s.pop(); double val1 = operands_s.pop();
-					if(op.equals('+')) val1 += val2;
-					else if(op.equals('-')) val1 -= val2;
-					else if(op.equals('*')) val1 *= val2;
-					else if(op.equals('/')) val1 /= val2;
-					else if(op.equals('%')) val1 %= val2;
-					operands_s.push(val1); op = operators_s.pop();
+			else if(mainExp.charAt(ind) == '(') {
+				s.push(mainExp.charAt(ind++));
+				//System.out.println("Check open symbol");
+			}
+			else if(mainExp.charAt(ind) == ')') {
+				while(!s.peek().equals('(')) {
+					result.add(String.valueOf(s.pop()));
 				}
+				s.pop(); ind++;
+				//System.out.println("Check close symbol");
 			}
-			//When file ends!! Get Leftover operand and calculate
-			else if(operators.isEmpty()) {	
-				Character op = operators_s.pop(); double val = operands_s.pop();
-				if(op.equals('+')) val += operands.remove(0);
-				else if(op.equals('-')) val -= operands.remove(0);
-				else if(op.equals('*')) val *= operands.remove(0);
-				else if(op.equals('/')) val /= operands.remove(0);
-				else if(op.equals('%')) val %= operands.remove(0);
-				operands_s.push(val);
-			}
-			
-			//When operators still exists in stack
 			else {
-				Character op = operators_s.pop();
-				if(returnPriority(operators.get(0)) < returnPriority(op)) {
-					operators_s.push(op);
-					operands_s.push(operands.remove(0));
-					operators_s.push(operators.remove(0));
+				while(!s.isEmpty() && (returnPriority(mainExp.charAt(ind)) <= returnPriority(s.peek()))) {
+					result.add(String.valueOf(s.pop()));
 				}
-				else {
-					double val = operands_s.pop();
-					if(op.equals('+')) val += operands.remove(0);
-					else if(op.equals('-')) val -= operands.remove(0);
-					else if(op.equals('*')) val *= operands.remove(0);
-					else if(op.equals('/')) val /= operands.remove(0);
-					else if(op.equals('%')) val %= operands.remove(0);
-					operands_s.push(val); operators_s.push(operators.remove(0));
-				}
+				s.push(mainExp.charAt(ind++));
+				//System.out.println("Check operators");
+			}
+			//System.out.println(ind);
+		}
+		while(!s.isEmpty()) {
+			result.add(String.valueOf(s.pop()));
+		}
+		return result;
+	}
+	
+	public static double Calculate(List<String> reg) {
+		Stack<Double> s = new Stack<>();
+		
+		while(!reg.isEmpty()) {
+			if(isOperand(reg.get(0).charAt(0))) {s.push(Double.valueOf(reg.remove(0)));}
+			else {
+				Double v1 = s.pop();
+				Double v2 = s.pop();
+				s.push(doOperator(reg.remove(0), v2, v1));
 			}
 		}
-		
-		while(!operators_s.isEmpty()) {
-			Character op = operators_s.pop();
-			double val2 = operands_s.pop(); double val1 = operands_s.pop();
-			if(op.equals('+')) val1 += val2;
-			else if(op.equals('-')) val1 -= val2;
-			else if(op.equals('*')) val1 *= val2;
-			else if(op.equals('/')) val1 /= val2;
-			else if(op.equals('%')) val1 %= val2;
-			operands_s.push(val1);
-		}
-		return operands_s.pop();
+		return s.pop();
 	}
 	
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 		
-		mainExpression = r.readLine();
-		List<Double> operands = returnOperands();
-		List<Character> operators = returnOperators();
+		mainExp = r.readLine();
 		
-		double result = Calculate(operands, operators);
-		System.out.println(result);
+		List<String> reg = convert();
+		reg.stream().forEach(s->System.out.print(s + " "));
+		System.out.println("Result: " + Calculate(reg));
 		r.close();
 	}
 
