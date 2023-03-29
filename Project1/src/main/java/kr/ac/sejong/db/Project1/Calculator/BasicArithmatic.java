@@ -6,10 +6,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.util.StringTokenizer;
 
-public class AppMain {
-	public static String mainExp;
+public class BasicArithmatic {
+	public static StringBuffer mainExp;
 	public static double mainMemory = 0;
 	
 	//Return boolean if it is operator
@@ -25,9 +24,8 @@ public class AppMain {
 		else if(val.equals('/') || val.equals('*') || val.equals('%')) return 4;
 		else return -1;
 	}
-	
+	//Return calculated value
 	public static double doOperator(String op, Double v1, Double v2) {
-		
 		if(op.equals("+")) return v1 + v2;
 		else if(op.equals("-")) return v1 - v2;
 		else if(op.equals("*")) return v1 * v2;
@@ -35,7 +33,7 @@ public class AppMain {
 		else if(op.equals("%")) return v1 % v2;
 		return -1;
 	}
-	
+	//Convert formula
 	public static List<String> convert() {
 		List<String> result = new ArrayList<>();
 		Stack<Character> s = new Stack<>();
@@ -75,7 +73,7 @@ public class AppMain {
 		}
 		return result;
 	}
-	
+	//Calculate formula
 	public static double Calculate(List<String> reg) {
 		Stack<Double> s = new Stack<>();
 		
@@ -89,15 +87,14 @@ public class AppMain {
 		}
 		return s.pop();
 	}
-	
+	//Main
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
 		
-		mainExp = r.readLine();
+		mainExp.append(r.readLine());
 		
 		List<String> reg = convert();
-		reg.stream().forEach(s->System.out.print(s + " "));
 		System.out.println("Result: " + Calculate(reg));
 		r.close();
 	}
