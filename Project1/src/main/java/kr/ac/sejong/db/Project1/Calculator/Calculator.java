@@ -27,11 +27,10 @@ public class Calculator extends JFrame {
 		pal.setBackground(Color.LIGHT_GRAY);
 		pal.setLayout(new GridLayout(4,4));
 		
-		for(int i = 1; i < 10; i++) {
-			jbutton_operands.add(new JButton(String.valueOf(i)));
+		for(int i = 1; i <= 10; i++) {
+			jbutton_operands.add(new JButton(String.valueOf(i%10)));
 		}
 		jbutton_operands.stream().forEach(s->{
-			s.setBounds(new Rectangle(10,10,10,10));
 			s.setBorderPainted(false);
 			pal.add(s);
 		});

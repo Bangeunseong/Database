@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class BasicArithmatic {
-	public static StringBuffer mainExp;
+	public static StringBuffer mainExp = new StringBuffer();
 	public static double mainMemory = 0;
 	
 	//Return boolean if it is operator
