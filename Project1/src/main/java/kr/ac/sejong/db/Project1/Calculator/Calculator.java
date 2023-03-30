@@ -16,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.plaf.basic.BasicCheckBoxMenuItemUI;
 
 public class Calculator extends JFrame implements ActionListener {
 	Container c; 
