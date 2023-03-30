@@ -1,15 +1,13 @@
 package kr.ac.sejong.db.Project1.Calculator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
 public class BasicArithmatic {
-	public static StringBuffer mainExp;
 	public static double mainMemory = 0;
+	public static StringBuffer mainExp = new StringBuffer();
+	public static String expFormat = "\\d+";	//Need to make!!
 	
 	//Return boolean if it is operator
 	public static boolean isOperand(char val) {
@@ -39,6 +37,8 @@ public class BasicArithmatic {
 		Stack<Character> s = new Stack<>();
 		
 		int ind = 0;
+		if(!isOperand(mainExp.charAt(ind))) result.add(String.valueOf(0));
+		
 		while(ind < mainExp.length()) {
 			StringBuffer tmp = new StringBuffer();
 			if(isOperand(mainExp.charAt(ind))) {
@@ -74,7 +74,7 @@ public class BasicArithmatic {
 		return result;
 	}
 	//Calculate formula
-	public static double Calculate(List<String> reg) {
+	public static void Calculate(List<String> reg) {
 		Stack<Double> s = new Stack<>();
 		
 		while(!reg.isEmpty()) {
@@ -85,18 +85,6 @@ public class BasicArithmatic {
 				s.push(doOperator(reg.remove(0), v2, v1));
 			}
 		}
-		return s.pop();
+		mainMemory = s.pop();
 	}
-	//Main
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-		
-		mainExp.append(r.readLine());
-		
-		List<String> reg = convert();
-		System.out.println("Result: " + Calculate(reg));
-		r.close();
-	}
-
 }
