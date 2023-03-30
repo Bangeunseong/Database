@@ -1,14 +1,20 @@
 package kr.ac.sejong.db.Project1.Calculator;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.plaf.BorderUIResource;
 
 public class Calculator extends JFrame {
 	Container c; JPanel pal;
@@ -19,12 +25,16 @@ public class Calculator extends JFrame {
 		c = getContentPane();
 		pal = new JPanel();
 		pal.setBackground(Color.LIGHT_GRAY);
-		pal.setLayout(new GridLayout(3,3));
+		pal.setLayout(new GridLayout(4,4));
 		
 		for(int i = 1; i < 10; i++) {
 			jbutton_operands.add(new JButton(String.valueOf(i)));
 		}
-		jbutton_operands.stream().forEach(s->pal.add(s));
+		jbutton_operands.stream().forEach(s->{
+			s.setBounds(new Rectangle(10,10,10,10));
+			s.setBorderPainted(false);
+			pal.add(s);
+		});
 		c.add(pal);
 	}
 	
