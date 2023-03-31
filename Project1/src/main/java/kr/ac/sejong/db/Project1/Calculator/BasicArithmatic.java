@@ -74,7 +74,7 @@ public class BasicArithmatic {
 		return result;
 	}
 	//Calculate formula
-	public static void Calculate(List<String> reg) {
+	public static double Calculate(List<String> reg) {
 		Stack<Double> s = new Stack<>();
 		
 		while(!reg.isEmpty()) {
@@ -85,6 +85,6 @@ public class BasicArithmatic {
 				s.push(doOperator(reg.remove(0), v2, v1));
 			}
 		}
-		mainMemory = s.pop();
+		return s.pop();
 	}
 }
