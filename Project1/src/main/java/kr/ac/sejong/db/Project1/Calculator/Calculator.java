@@ -1,6 +1,7 @@
 package kr.ac.sejong.db.Project1.Calculator;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
@@ -12,15 +13,21 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 public class Calculator extends JFrame implements ActionListener {
-	Container c; 
+	//Field
+	JMenuBar jMenuBar; JMenu jMenu; JMenuItem basicItem, matrixItem;
+	
+	Container c; CardLayout card_Layout;
 	JPanel formula_Panel; JTextArea jArea;
-	JPanel main_Panel; JPanel operand_Panel; JPanel function_Panel; JPanel operator_Panel;
+	JPanel arithmatic_Panel; JPanel main_Panel; JPanel operand_Panel; JPanel function_Panel; JPanel operator_Panel;
 	
 	private List<JButton> jbutton_Operands = new ArrayList<>();
 	private List<JButton> jbutton_Operators = new ArrayList<>();
@@ -28,16 +35,53 @@ public class Calculator extends JFrame implements ActionListener {
 	private List<String> operators = new ArrayList<>();
 	private List<String> functions = new ArrayList<>();
 	
-	void setButton() {
-		c = getContentPane();
-		c.setLayout(new BorderLayout());
+	//--------------------------------------------------------
+	//MenuBar Setting
+	void setMenuBar() {
+		jMenuBar = new JMenuBar();
+		jMenu = new JMenu("Select");
+		
+		basicItem = new JMenuItem("Basic"); matrixItem = new JMenuItem("Matrix");
+		basicItem.addActionListener(new SelectActionListener());
+		matrixItem.addActionListener(new SelectActionListener());
+		
+		jMenu.add(basicItem); jMenu.add(matrixItem);
+		jMenuBar.add(jMenu);
+		setJMenuBar(jMenuBar);
+	}
+	
+	//MenuBar eventlistener
+	class SelectActionListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			JMenuItem jMenuItem = (JMenuItem)e.getSource();
+			if(jMenuItem.getText().equals("Basic")) {
+				card_Layout.show(c, "Basic");
+			}
+			else if(jMenuItem.getText().equals("Matrix")) {
+				
+			}
+			else {
+				
+			}
+		}
+	}
+	//----------------------------------------------------------
+	
+	//----------------------------------------------------------
+	//Basic calculator button setting
+	void setArithmaticCalculator() {
+		//Arithmatic calculation panel
+		arithmatic_Panel = new JPanel();
+		arithmatic_Panel.setLayout(new BorderLayout());
 		
 		//Formula_panel textarea
 		formula_Panel = new JPanel();
 		formula_Panel.setBackground(Color.LIGHT_GRAY);
 		formula_Panel.setLayout(new BorderLayout());
 		
-		jArea = new JTextArea(5,40);
+		jArea = new JTextArea(8,300);
 		jArea.setEditable(false);
 		formula_Panel.add(jArea, BorderLayout.CENTER);
 		
@@ -55,7 +99,7 @@ public class Calculator extends JFrame implements ActionListener {
 		jbutton_Operands.add(new JButton("00")); jbutton_Operands.add(new JButton("."));
 		jbutton_Operands.stream().forEach(s->{
 			s.addActionListener(this);
-			s.setFont(new Font("Dialog", 0, 15));
+			s.setFont(new Font("Dialog", 0, 14));
 			operand_Panel.add(s);
 		});
 		
@@ -70,7 +114,7 @@ public class Calculator extends JFrame implements ActionListener {
 		});
 		jbutton_functions.stream().forEach(s->{
 			s.addActionListener(this);
-			s.setFont(new Font("Dialog", 0, 15));
+			s.setFont(new Font("Dialog", 0, 12));
 			function_Panel.add(s);
 		});
 		
@@ -85,11 +129,11 @@ public class Calculator extends JFrame implements ActionListener {
 		});
 		jbutton_Operators.stream().forEach(s->{
 			s.addActionListener(this);
-			s.setFont(new Font("Dialog", 0, 15));
+			s.setFont(new Font("Dialog", 0, 14));
 			operator_Panel.add(s);
 		});
 		JButton resultButton = new JButton("=");
-		resultButton.setFont(new Font("Dialog", 0, 15));
+		resultButton.setFont(new Font("Dialog", 0, 14));
 		resultButton.addActionListener(this);
 		operator_Panel.add(resultButton);
 		
@@ -98,10 +142,11 @@ public class Calculator extends JFrame implements ActionListener {
 		main_Panel.add(operator_Panel,BorderLayout.EAST);
 		main_Panel.add(function_Panel,BorderLayout.NORTH);
 		
-		c.add(formula_Panel, BorderLayout.NORTH);
-		c.add(main_Panel, BorderLayout.CENTER);
+		arithmatic_Panel.add(formula_Panel, BorderLayout.NORTH);
+		arithmatic_Panel.add(main_Panel, BorderLayout.CENTER);
 	}
 	
+	//Basic calculator event listener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -142,17 +187,34 @@ public class Calculator extends JFrame implements ActionListener {
 		}
 		jArea.setText(BasicArithmatic.mainExp.toString());
 	}
+	//-----------------------------------------------------------
 	
+	//-----------------------------------------------------------
+	//Matrix Calculator button setting
+	
+	
+	//-----------------------------------------------------------
+	//Constructor
 	public Calculator() {
-		setTitle("Calculator");
-		setSize(300,400);
+		setTitle("Calculator"); setSize(370,500);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setButton();
+		card_Layout = new CardLayout(5,5);
+		
+		setArithmaticCalculator();
+		setMenuBar();
+		
+		c = getContentPane(); c.setLayout(card_Layout);
+		c.add(arithmatic_Panel, "Basic");
+		
 		setVisible(true);
 	}
-
+	//-----------------------------------------------------------
+	
+	//-----------------------------------------------------------
+	//Main
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		new Calculator();
-	}	
+	}
+	
 }
