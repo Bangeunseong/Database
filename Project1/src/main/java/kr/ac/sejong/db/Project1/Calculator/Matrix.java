@@ -8,7 +8,7 @@ public class Matrix {
 	public static Map<Integer, Double> mainMatrix = new HashMap<>();
 	public static Map<Integer, Double> subMatrix = new HashMap<>();
 	
-	public Map<Integer, Double> matrix_Add() throws ArithmeticException{
+	public static Map<Integer, Double> matrix_Add() throws ArithmeticException{
 		if(mainMatrix.isEmpty() || subMatrix.isEmpty()) {
 			throw new ArithmeticException("One of matrices is empty!");
 		}
@@ -28,7 +28,7 @@ public class Matrix {
 		return result;
 	}
 	
-	public Map<Integer, Double> matrix_Sub() throws ArithmeticException{
+	public static Map<Integer, Double> matrix_Sub() throws ArithmeticException{
 		if(mainMatrix.isEmpty() || subMatrix.isEmpty()) {
 			throw new ArithmeticException("One of matrices is empty!");
 		}
@@ -48,7 +48,7 @@ public class Matrix {
 		return result;
 	}
 	
-	public Map<Integer, Double> matrix_Mul() throws ArithmeticException{
+	public static Map<Integer, Double> matrix_Mul() throws ArithmeticException{
 		if(mainMatrix.isEmpty() || subMatrix.isEmpty()) {
 			throw new ArithmeticException("One of matrices is empty!");
 		}
@@ -57,12 +57,13 @@ public class Matrix {
 		}
 		
 		Map<Integer, Double> result = new HashMap<>();
-		for(int i = 0; i < rowA * colA; i++) {
+		
+		
+		for(int i = 0; i < rowA * colB; i++) {
 			double tmp = 0;
-			if(mainMatrix.containsKey(i)) {tmp += mainMatrix.get(i);}
-			else {throw new ArithmeticException();}
-			if(subMatrix.containsKey(i)) {tmp += subMatrix.get(i);}
-			else {throw new ArithmeticException();}
+			for(int j = 0; j < colA; j++) {
+				tmp += mainMatrix.get(i / colB * colA + j) * subMatrix.get(i % colB + j * colB);
+			}
 			result.put(i, tmp);
 		}
 		return result;

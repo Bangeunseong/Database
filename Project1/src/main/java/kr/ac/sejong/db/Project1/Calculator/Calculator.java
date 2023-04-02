@@ -12,18 +12,21 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-public class Calculator extends JFrame implements ActionListener {
+public class Calculator extends JFrame {
 	//-------------------------------------------------------
 	//Field for main_container
 	Container c; CardLayout card_Layout;
@@ -33,8 +36,8 @@ public class Calculator extends JFrame implements ActionListener {
 	
 	//Field for arithmatic calculator
 	JPanel main_Panel_A;
-	JPanel formula_Panel; JTextArea jArea_A;
-	JPanel arithmatic_Panel; JPanel operand_Panel; JPanel function_Panel; JPanel operator_Panel;
+	JTextArea jArea_A;
+	JPanel arithmetic_Panel; JPanel operand_Panel; JPanel function_Panel; JPanel operator_Panel;
 	
 	private List<JButton> jbutton_Operands = new ArrayList<>();
 	private List<JButton> jbutton_Operators = new ArrayList<>();
@@ -52,6 +55,7 @@ public class Calculator extends JFrame implements ActionListener {
 	private List<JTextField> jTextFields_B = new ArrayList<>();
 	private List<JButton> jbutton_fucntions_M = new ArrayList<>();
 	private List<String> functions_M = new ArrayList<>();
+	public Map<Integer, Double> result = null;
 	
 	//--------------------------------------------------------
 	//MenuBar Setting
@@ -72,7 +76,7 @@ public class Calculator extends JFrame implements ActionListener {
 	class SelectActionListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			//TODO Logic calculator layout code
 			JMenuItem jMenuItem = (JMenuItem)e.getSource();
 			if(jMenuItem.getText().equals("Basic")) {
 				setSize(370,500);
@@ -92,18 +96,13 @@ public class Calculator extends JFrame implements ActionListener {
 	//----------------------------------------------------------
 	//Basic calculator button setting
 	void setArithmaticCalculator() {
-		//Arithmatic calculation panel
-		arithmatic_Panel = new JPanel();
-		arithmatic_Panel.setLayout(new BorderLayout());
+		//Base panel
+		arithmetic_Panel = new JPanel();
+		arithmetic_Panel.setLayout(new BorderLayout());
 		
 		//Formula_panel textarea
-		formula_Panel = new JPanel();
-		formula_Panel.setBackground(Color.LIGHT_GRAY);
-		formula_Panel.setLayout(new BorderLayout());
-		
 		jArea_A = new JTextArea(8,300);
 		jArea_A.setEditable(false);
-		formula_Panel.add(jArea_A, BorderLayout.CENTER);
 		
 		//Operand, Operator, Function panel merged to main panel
 		main_Panel_A = new JPanel();
@@ -118,7 +117,7 @@ public class Calculator extends JFrame implements ActionListener {
 		for(int i = 1; i <= 10; i++) {jbutton_Operands.add(new JButton(String.valueOf(i%10)));}
 		jbutton_Operands.add(new JButton("00")); jbutton_Operands.add(new JButton("."));
 		jbutton_Operands.stream().forEach(s->{
-			s.addActionListener(this);
+			s.addActionListener(new SelectAction_BasicListener());
 			s.setFont(new Font("Dialog", 0, 14));
 			operand_Panel.add(s);
 		});
@@ -133,7 +132,7 @@ public class Calculator extends JFrame implements ActionListener {
 			jbutton_functions.add(new JButton(data));
 		});
 		jbutton_functions.stream().forEach(s->{
-			s.addActionListener(this);
+			s.addActionListener(new SelectAction_BasicListener());
 			s.setFont(new Font("Dialog", 0, 12));
 			function_Panel.add(s);
 		});
@@ -148,13 +147,13 @@ public class Calculator extends JFrame implements ActionListener {
 			jbutton_Operators.add(new JButton(data));
 		});
 		jbutton_Operators.stream().forEach(s->{
-			s.addActionListener(this);
+			s.addActionListener(new SelectAction_BasicListener());
 			s.setFont(new Font("Dialog", 0, 14));
 			operator_Panel.add(s);
 		});
 		JButton resultButton = new JButton("=");
 		resultButton.setFont(new Font("Dialog", 0, 14));
-		resultButton.addActionListener(this);
+		resultButton.addActionListener(new SelectAction_BasicListener());
 		operator_Panel.add(resultButton);
 		
 		//Merge all panels to main panel
@@ -162,50 +161,53 @@ public class Calculator extends JFrame implements ActionListener {
 		main_Panel_A.add(operator_Panel,BorderLayout.EAST);
 		main_Panel_A.add(function_Panel,BorderLayout.NORTH);
 		
-		arithmatic_Panel.add(formula_Panel, BorderLayout.NORTH);
-		arithmatic_Panel.add(main_Panel_A, BorderLayout.CENTER);
+		//Add all component_panel to Base_Panel(arithmatic_Panel)
+		arithmetic_Panel.add(jArea_A, BorderLayout.NORTH);
+		arithmetic_Panel.add(main_Panel_A, BorderLayout.CENTER);
 	}
 	
 	//Basic calculator event listener
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-		JButton op_Button = (JButton)e.getSource();
-		if(jbutton_Operands.stream().anyMatch(data -> data.getText().equals(op_Button.getText()))) {
-			BasicArithmatic.mainExp.append(op_Button.getText());
-		}
-		else if(operators.stream().anyMatch(data -> data.equals(op_Button.getText()))) {
-			BasicArithmatic.mainExp.append(op_Button.getText());
-		}
-		else if(op_Button.getText().equals("C")) {
-			if(BasicArithmatic.mainExp.length() > 0)
+	class SelectAction_BasicListener implements ActionListener{
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Make exception method
+			JButton op_Button = (JButton)e.getSource();
+			if(jbutton_Operands.stream().anyMatch(data -> data.getText().equals(op_Button.getText()))) {
+				BasicArithmatic.mainExp.append(op_Button.getText());
+			}
+			else if(operators.stream().anyMatch(data -> data.equals(op_Button.getText()))) {
+				BasicArithmatic.mainExp.append(op_Button.getText());
+			}
+			else if(op_Button.getText().equals("C")) {
+				if(BasicArithmatic.mainExp.length() > 0)
+					BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
+			}
+			else if(op_Button.getText().equals("CE")) {
+				if(BasicArithmatic.mainExp.length() > 0)
+					BasicArithmatic.mainExp.deleteCharAt(BasicArithmatic.mainExp.length() - 1);
+			}
+			else if(op_Button.getText().equals("M+")) {
+				BasicArithmatic.mainMemory += BasicArithmatic.Calculate(BasicArithmatic.convert());
 				BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
+			}
+			else if(op_Button.getText().equals("M-")) {
+				BasicArithmatic.mainMemory -= BasicArithmatic.Calculate(BasicArithmatic.convert());
+				BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
+			}
+			else if(op_Button.getText().equals("MR")) {
+				if(BasicArithmatic.mainMemory >= 0) BasicArithmatic.mainExp.append("+" + String.valueOf(BasicArithmatic.mainMemory));
+				else BasicArithmatic.mainExp.append(String.valueOf(BasicArithmatic.mainMemory));
+			}
+			else if(op_Button.getText().equals("MC")) {
+				BasicArithmatic.mainMemory = 0;
+			}
+			else {
+				BasicArithmatic.mainMemory = BasicArithmatic.Calculate(BasicArithmatic.convert());
+				BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
+				BasicArithmatic.mainExp.append(BasicArithmatic.mainMemory);
+			}
+			jArea_A.setText(BasicArithmatic.mainExp.toString());
 		}
-		else if(op_Button.getText().equals("CE")) {
-			if(BasicArithmatic.mainExp.length() > 0)
-				BasicArithmatic.mainExp.deleteCharAt(BasicArithmatic.mainExp.length() - 1);
-		}
-		else if(op_Button.getText().equals("M+")) {
-			BasicArithmatic.mainMemory += BasicArithmatic.Calculate(BasicArithmatic.convert());
-			BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
-		}
-		else if(op_Button.getText().equals("M-")) {
-			BasicArithmatic.mainMemory -= BasicArithmatic.Calculate(BasicArithmatic.convert());
-			BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
-		}
-		else if(op_Button.getText().equals("MR")) {
-			if(BasicArithmatic.mainMemory >= 0) BasicArithmatic.mainExp.append("+" + String.valueOf(BasicArithmatic.mainMemory));
-			else BasicArithmatic.mainExp.append(String.valueOf(BasicArithmatic.mainMemory));
-		}
-		else if(op_Button.getText().equals("MC")) {
-			BasicArithmatic.mainMemory = 0;
-		}
-		else {
-			BasicArithmatic.mainMemory = BasicArithmatic.Calculate(BasicArithmatic.convert());
-			BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
-			BasicArithmatic.mainExp.append(BasicArithmatic.mainMemory);
-		}
-		jArea_A.setText(BasicArithmatic.mainExp.toString());
 	}
 	//-----------------------------------------------------------
 	
@@ -213,6 +215,10 @@ public class Calculator extends JFrame implements ActionListener {
 	//Matrix Calculator button setting
 	void setMatrixCalculator() {
 		//--------------------------------------------------------
+		//Setting result TextArea
+		jArea_M = new JTextArea(8,370);
+		jArea_M.setEditable(false);
+		
 		//Setting MatrixA
 		matrix_A = new JPanel();
 		matrix_A.setBorder(new TitledBorder(new LineBorder(Color.black),"Matrix_A"));
@@ -223,6 +229,8 @@ public class Calculator extends JFrame implements ActionListener {
 		for(int i = 0; i < Matrix.rowA * Matrix.colA; i++) {
 			jTextFields_A.add(new JTextField(50));
 			jTextFields_A.get(i).setFont(new Font("Dialog", 0, 12));
+			jTextFields_A.get(i).setName(String.valueOf(i));
+			jTextFields_A.get(i).addActionListener(null);
 			if(Matrix.mainMatrix.containsKey(i)) {
 				jTextFields_A.get(i).setText(String.valueOf(Matrix.mainMatrix.get(i)));
 			}
@@ -239,14 +247,14 @@ public class Calculator extends JFrame implements ActionListener {
 		for(int i = 0; i < Matrix.rowB * Matrix.colB; i++) {
 			jTextFields_B.add(new JTextField(50));
 			jTextFields_B.get(i).setFont(new Font("Dialog", 0, 12));
+			jTextFields_B.get(i).setName(String.valueOf(i));
+			jTextFields_B.get(i).addActionListener(null);
 			if(Matrix.subMatrix.containsKey(i)) {
 				jTextFields_B.get(i).setText(String.valueOf(Matrix.subMatrix.get(i)));
 			}
 		}
 		jTextFields_B.stream().forEach(data->matrix_B.add(data));
-		//-------------------------------------------------------------
 		
-		//-------------------------------------------------------------
 		//Setting Function_Panel of Matrix
 		function_Panel_M = new JPanel();
 		function_Panel_M.setLayout(new FlowLayout(FlowLayout.CENTER,10,10));
@@ -256,9 +264,64 @@ public class Calculator extends JFrame implements ActionListener {
 		functions_M.stream().forEach(data->{
 			jbutton_fucntions_M.add(new JButton(data));
 		});
-		jbutton_fucntions_M.stream().forEach(data->{
+		
+		class SelectAction_MatrixListener implements ActionListener{
+			StringBuffer mainExp_M = new StringBuffer();
 			
-			data.addActionListener(null);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JButton jButton_M = (JButton)e.getSource();
+				if(jButton_M.getText().equals("A + B")) {
+					try {
+						result = Matrix.matrix_Add();
+						mainExp_M.append("---------\"A + B\"---------\n");
+						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
+							if(i % Matrix.colB == 0) mainExp_M.append("\n");
+							mainExp_M.append(result.get(i).toString() + " ");
+						}
+						mainExp_M.append("\n");
+					}
+					catch(ArithmeticException exp_M) {
+						exp_M.printStackTrace();
+						//TODO Later enter popup screen
+					}
+				}
+				else if(jButton_M.getText().equals("A - B")) {
+					try {
+						result = Matrix.matrix_Sub();
+						mainExp_M.append("---------\"A - B\"---------\n");
+						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
+							if(i % Matrix.colB == 0) mainExp_M.append("\n");
+							mainExp_M.append(result.get(i).toString() + " ");
+						}
+						mainExp_M.append("\n");
+					}
+					catch(ArithmeticException exp_M) {
+						exp_M.printStackTrace();
+						//TODO Later enter popup screen
+					}
+				}
+				else if(jButton_M.getText().equals("A x B")) {
+					try {
+						result = Matrix.matrix_Mul();
+						mainExp_M.append("---------\"A x B\"---------\n");
+						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
+							if(i % Matrix.colB == 0) mainExp_M.append("\n");
+							mainExp_M.append(result.get(i).toString() + " ");
+						}
+						mainExp_M.append("\n");
+					}
+					catch(ArithmeticException exp_M) {
+						exp_M.printStackTrace();
+						//TODO Later enter popup screen
+					}
+				}
+				jArea_M.setText(mainExp_M.toString());
+			}
+		}
+		
+		jbutton_fucntions_M.stream().forEach(data->{
+			data.addActionListener(new SelectAction_MatrixListener());
 			data.setFont(new Font("Dialog", 0, 14));
 			function_Panel_M.add(data);
 		});
@@ -273,7 +336,9 @@ public class Calculator extends JFrame implements ActionListener {
 		matrix_Panel = new JPanel();
 		matrix_Panel.setLayout(new BorderLayout(3,3));
 		matrix_Panel.add(main_Panel_M,BorderLayout.CENTER);
+		matrix_Panel.add(new JScrollPane(jArea_M), BorderLayout.SOUTH);
 	}
+	//-----------------------------------------------------------
 	
 	//-----------------------------------------------------------
 	//Constructor
@@ -287,7 +352,7 @@ public class Calculator extends JFrame implements ActionListener {
 		setMenuBar();
 		
 		c = getContentPane(); c.setLayout(card_Layout);
-		c.add(arithmatic_Panel, "Basic");
+		c.add(arithmetic_Panel, "Basic");
 		c.add(matrix_Panel, "Matrix");
 		
 		setVisible(true);
@@ -297,7 +362,6 @@ public class Calculator extends JFrame implements ActionListener {
 	//-----------------------------------------------------------
 	//Main
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		new Calculator();
 	}
 	
