@@ -19,7 +19,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -51,12 +53,18 @@ public class Calculator extends JFrame {
 	JPanel main_Panel_M; GridLayout main_PanelLayout;
 	JPanel matrix_A, matrix_B, function_Panel_M; GridLayout matrixlayout_A, matrixlayout_B;
 	
+	JPanel rowcol_Config, config_Panel_A, config_Panel_B;
+	private List<String> matrixConfig_Phrase = Arrays.asList("row+","row-","col+","col-");
+	private List<JButton> matrixConfig_A = new ArrayList<>();
+	private List<JButton> matrixConfig_B = new ArrayList<>();
+	
 	private List<JTextField> jTextFields_A = new ArrayList<>();
 	private List<JTextField> jTextFields_B = new ArrayList<>();
 	private List<JButton> jbutton_fucntions_M = new ArrayList<>();
 	private List<String> functions_M = new ArrayList<>();
 	public Map<Integer, Double> result = null;
 	
+	StringBuffer mainExp_M = new StringBuffer("--------------------Results--------------------\n");
 	//--------------------------------------------------------
 	//MenuBar Setting
 	void setMenuBar() {
@@ -83,7 +91,7 @@ public class Calculator extends JFrame {
 				card_Layout.show(c, "Basic");
 			}
 			else if(jMenuItem.getText().equals("Matrix")) {
-				setSize(370,350);
+				setSize(600,500);
 				card_Layout.show(c, "Matrix");
 			}
 			else {
@@ -216,7 +224,7 @@ public class Calculator extends JFrame {
 	void setMatrixCalculator() {
 		//--------------------------------------------------------
 		//Setting result TextArea
-		jArea_M = new JTextArea(8,370);
+		jArea_M = new JTextArea(mainExp_M.toString(),8,370);
 		jArea_M.setEditable(false);
 		
 		//Setting MatrixA
@@ -230,10 +238,7 @@ public class Calculator extends JFrame {
 			jTextFields_A.add(new JTextField(50));
 			jTextFields_A.get(i).setFont(new Font("Dialog", 0, 12));
 			jTextFields_A.get(i).setName(String.valueOf(i));
-			jTextFields_A.get(i).addActionListener(null);
-			if(Matrix.mainMatrix.containsKey(i)) {
-				jTextFields_A.get(i).setText(String.valueOf(Matrix.mainMatrix.get(i)));
-			}
+			jTextFields_A.get(i).setHorizontalAlignment(JTextField.RIGHT);
 		}
 		jTextFields_A.stream().forEach(data->matrix_A.add(data));
 		
@@ -248,10 +253,7 @@ public class Calculator extends JFrame {
 			jTextFields_B.add(new JTextField(50));
 			jTextFields_B.get(i).setFont(new Font("Dialog", 0, 12));
 			jTextFields_B.get(i).setName(String.valueOf(i));
-			jTextFields_B.get(i).addActionListener(null);
-			if(Matrix.subMatrix.containsKey(i)) {
-				jTextFields_B.get(i).setText(String.valueOf(Matrix.subMatrix.get(i)));
-			}
+			jTextFields_B.get(i).setHorizontalAlignment(JTextField.RIGHT);
 		}
 		jTextFields_B.stream().forEach(data->matrix_B.add(data));
 		
@@ -266,65 +268,143 @@ public class Calculator extends JFrame {
 		});
 		
 		class SelectAction_MatrixListener implements ActionListener{
-			StringBuffer mainExp_M = new StringBuffer();
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JButton jButton_M = (JButton)e.getSource();
+				for(JTextField dataA : jTextFields_A) {
+					try {
+						Matrix.mainMatrix.put(Integer.parseInt(dataA.getName()), Double.parseDouble(dataA.getText()));
+					}
+					catch(NumberFormatException exp_null) {
+						Matrix.mainMatrix.put(Integer.parseInt(dataA.getName()), (double)0);
+					}
+				}
+				for(JTextField dataB : jTextFields_B) {
+					try {
+						Matrix.subMatrix.put(Integer.parseInt(dataB.getName()), Double.parseDouble(dataB.getText()));
+					}
+					catch(NumberFormatException exp_null) {
+						Matrix.subMatrix.put(Integer.parseInt(dataB.getName()), (double)0);
+					}
+				}
+				
 				if(jButton_M.getText().equals("A + B")) {
 					try {
 						result = Matrix.matrix_Add();
-						mainExp_M.append("---------\"A + B\"---------\n");
+						mainExp_M.append("-------------------\"A + B\"-------------------");
 						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
 							if(i % Matrix.colB == 0) mainExp_M.append("\n");
-							mainExp_M.append(result.get(i).toString() + " ");
+							mainExp_M.append(result.get(i).toString() + "\t");
 						}
-						mainExp_M.append("\n");
+						mainExp_M.append("\n\n");
 					}
 					catch(ArithmeticException exp_M) {
 						exp_M.printStackTrace();
 						//TODO Later enter popup screen
+						JOptionPane.showMessageDialog(null, exp_M.getMessage());
 					}
 				}
 				else if(jButton_M.getText().equals("A - B")) {
 					try {
 						result = Matrix.matrix_Sub();
-						mainExp_M.append("---------\"A - B\"---------\n");
+						mainExp_M.append("-------------------\"A - B\"-------------------");
 						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
 							if(i % Matrix.colB == 0) mainExp_M.append("\n");
-							mainExp_M.append(result.get(i).toString() + " ");
+							mainExp_M.append(result.get(i).toString() + "\t");
 						}
-						mainExp_M.append("\n");
+						mainExp_M.append("\n\n");
 					}
 					catch(ArithmeticException exp_M) {
 						exp_M.printStackTrace();
 						//TODO Later enter popup screen
+						JOptionPane.showMessageDialog(null, exp_M.getMessage());
 					}
 				}
 				else if(jButton_M.getText().equals("A x B")) {
 					try {
 						result = Matrix.matrix_Mul();
-						mainExp_M.append("---------\"A x B\"---------\n");
+						mainExp_M.append("-------------------\"A x B\"-------------------");
 						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
 							if(i % Matrix.colB == 0) mainExp_M.append("\n");
-							mainExp_M.append(result.get(i).toString() + " ");
+							mainExp_M.append(result.get(i).toString() + "\t");
 						}
-						mainExp_M.append("\n");
+						mainExp_M.append("\n\n");
 					}
 					catch(ArithmeticException exp_M) {
 						exp_M.printStackTrace();
 						//TODO Later enter popup screen
+						JOptionPane.showMessageDialog(null, exp_M.getMessage());
 					}
 				}
 				jArea_M.setText(mainExp_M.toString());
 			}
 		}
-		
 		jbutton_fucntions_M.stream().forEach(data->{
 			data.addActionListener(new SelectAction_MatrixListener());
 			data.setFont(new Font("Dialog", 0, 14));
 			function_Panel_M.add(data);
 		});
+		
+		//Setting rowcol_Config Panel contains jbuttons of row and col of matrix A, B
+		class SelectAction_MatrixConfigListener implements ActionListener{
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JButton actionButton = (JButton)e.getSource();
+				if(actionButton.getName().equals("ConfigA")) {
+					if(actionButton.getText().equals("row+")) Matrix.rowA++;
+					else if(actionButton.getText().equals("row-") && Matrix.rowA > 1) Matrix.rowA--;
+					else if(actionButton.getText().equals("col+")) Matrix.colA++;
+					else if(actionButton.getText().equals("col-") && Matrix.colA > 1) Matrix.colA--;
+					Matrix.mainMatrix.clear();
+					jTextFields_A.clear();
+					matrix_A.removeAll();
+					matrixlayout_A.setRows(Matrix.rowA); matrixlayout_A.setColumns(Matrix.colA);
+					for(int i = 0; i < Matrix.rowA * Matrix.colA; i++) {
+						jTextFields_A.add(new JTextField(50));
+						jTextFields_A.get(i).setFont(new Font("Dialog", 0, 12));
+						jTextFields_A.get(i).setName(String.valueOf(i));
+						jTextFields_A.get(i).setHorizontalAlignment(JTextField.RIGHT);
+					}
+					jTextFields_A.stream().forEach(data->matrix_A.add(data));
+					matrix_A.revalidate();
+					matrix_A.repaint();
+				}
+				else {
+					if(actionButton.getText().equals("row+")) Matrix.rowB++;
+					else if(actionButton.getText().equals("row-") && Matrix.rowB > 1) Matrix.rowB--;
+					else if(actionButton.getText().equals("col+")) Matrix.colB++;
+					else if(actionButton.getText().equals("col-") && Matrix.colB > 1) Matrix.colB--;
+					Matrix.subMatrix.clear();
+					jTextFields_B.clear();
+					matrix_B.removeAll();
+					matrixlayout_B.setRows(Matrix.rowB); matrixlayout_B.setColumns(Matrix.colB);
+					for(int i = 0; i < Matrix.rowB * Matrix.colB; i++) {
+						jTextFields_B.add(new JTextField(50));
+						jTextFields_B.get(i).setFont(new Font("Dialog", 0, 12));
+						jTextFields_B.get(i).setName(String.valueOf(i));
+						jTextFields_B.get(i).setHorizontalAlignment(JTextField.RIGHT);
+					}
+					jTextFields_B.stream().forEach(data->matrix_B.add(data));
+					matrix_B.revalidate();
+					matrix_B.repaint();
+				}
+			}
+		}
+		matrixConfig_Phrase.stream().forEach(data->{
+			JButton tmp1 = new JButton(data), tmp2 = new JButton(data);
+			tmp1.setName("ConfigA"); tmp1.addActionListener(new SelectAction_MatrixConfigListener());
+			tmp2.setName("ConfigB"); tmp2.addActionListener(new SelectAction_MatrixConfigListener());
+			matrixConfig_A.add(tmp1);
+			matrixConfig_B.add(tmp2);
+		});
+		
+		rowcol_Config = new JPanel(new GridLayout(1,2));
+		config_Panel_A = new JPanel(new FlowLayout(FlowLayout.LEFT,3,0));
+		config_Panel_B = new JPanel(new FlowLayout(FlowLayout.RIGHT,3,0));
+		matrixConfig_A.stream().forEach(data->config_Panel_A.add(data));
+		matrixConfig_B.stream().forEach(data->config_Panel_B.add(data));
+		rowcol_Config.add(config_Panel_A); rowcol_Config.add(config_Panel_B);
 		
 		//Setting main_Panel_M by adding MatrixA, MatrixB, Function_Panel_M
 		main_PanelLayout = new GridLayout(1,3,3,3);
@@ -336,6 +416,7 @@ public class Calculator extends JFrame {
 		matrix_Panel = new JPanel();
 		matrix_Panel.setLayout(new BorderLayout(3,3));
 		matrix_Panel.add(main_Panel_M,BorderLayout.CENTER);
+		matrix_Panel.add(rowcol_Config, BorderLayout.NORTH);
 		matrix_Panel.add(new JScrollPane(jArea_M), BorderLayout.SOUTH);
 	}
 	//-----------------------------------------------------------

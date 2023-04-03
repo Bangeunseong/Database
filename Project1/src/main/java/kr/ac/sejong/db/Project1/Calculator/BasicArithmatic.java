@@ -37,7 +37,6 @@ public class BasicArithmatic {
 		Stack<Character> s = new Stack<>();
 		
 		int ind = 0;
-		if(!isOperand(mainExp.charAt(ind))) result.add(String.valueOf(0));
 		
 		while(ind < mainExp.length()) {
 			StringBuffer tmp = new StringBuffer();
@@ -60,6 +59,7 @@ public class BasicArithmatic {
 				//System.out.println("Check close symbol");
 			}
 			else {
+				if(ind == 0 || mainExp.charAt(ind - 1) == '(') {result.add(String.valueOf(0));}
 				while(!s.isEmpty() && (returnPriority(mainExp.charAt(ind)) <= returnPriority(s.peek()))) {
 					result.add(String.valueOf(s.pop()));
 				}
