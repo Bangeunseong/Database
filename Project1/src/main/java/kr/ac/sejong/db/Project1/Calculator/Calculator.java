@@ -291,11 +291,11 @@ public class Calculator extends JFrame {
 				
 				if(jButton_M.getText().equals("A + B")) {
 					try {
-						result = Matrix.matrix_Add();
+						Matrix.matrix_Add();
 						mainExp_M.append("-------------------\"A + B\"-------------------");
 						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
 							if(i % Matrix.colB == 0) mainExp_M.append("\n");
-							mainExp_M.append(result.get(i).toString() + "\t");
+							mainExp_M.append(Matrix.result.get(i).toString() + "\t");
 						}
 						mainExp_M.append("\n\n");
 					}
@@ -307,11 +307,11 @@ public class Calculator extends JFrame {
 				}
 				else if(jButton_M.getText().equals("A - B")) {
 					try {
-						result = Matrix.matrix_Sub();
+						Matrix.matrix_Sub();
 						mainExp_M.append("-------------------\"A - B\"-------------------");
 						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
 							if(i % Matrix.colB == 0) mainExp_M.append("\n");
-							mainExp_M.append(result.get(i).toString() + "\t");
+							mainExp_M.append(Matrix.result.get(i).toString() + "\t");
 						}
 						mainExp_M.append("\n\n");
 					}
@@ -323,11 +323,11 @@ public class Calculator extends JFrame {
 				}
 				else if(jButton_M.getText().equals("A x B")) {
 					try {
-						result = Matrix.matrix_Mul();
+						Matrix.matrix_Mul();
 						mainExp_M.append("-------------------\"A x B\"-------------------");
 						for(int i = 0; i < Matrix.rowA * Matrix.colB; i++) {
 							if(i % Matrix.colB == 0) mainExp_M.append("\n");
-							mainExp_M.append(result.get(i).toString() + "\t");
+							mainExp_M.append(Matrix.result.get(i).toString() + "\t");
 						}
 						mainExp_M.append("\n\n");
 					}
@@ -444,6 +444,7 @@ public class Calculator extends JFrame {
 	//Main
 	public static void main(String[] args) {
 		new Calculator();
+		
 	}
 	
 }

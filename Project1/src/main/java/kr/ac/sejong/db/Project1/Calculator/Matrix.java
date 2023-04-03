@@ -7,8 +7,9 @@ public class Matrix {
 	public static int rowA = 3, colA = 3, rowB = 3, colB = 3;
 	public static Map<Integer, Double> mainMatrix = new HashMap<>();
 	public static Map<Integer, Double> subMatrix = new HashMap<>();
+	public static Map<Integer, Double> result = new HashMap<>();
 	
-	public static Map<Integer, Double> matrix_Add() throws ArithmeticException{
+	public static void matrix_Add() throws ArithmeticException{
 		if(mainMatrix.isEmpty() || subMatrix.isEmpty()) {
 			throw new ArithmeticException("One of matrices is empty!");
 		}
@@ -16,7 +17,7 @@ public class Matrix {
 			throw new ArithmeticException("Two matrices need to be same dimension");
 		}
 		
-		Map<Integer, Double> result = new HashMap<>();
+		result.clear();
 		for(int i = 0; i < rowA * colA; i++) {
 			double tmp = 0;
 			if(mainMatrix.containsKey(i)) {tmp += mainMatrix.get(i);}
@@ -25,10 +26,9 @@ public class Matrix {
 			else {throw new ArithmeticException();}
 			result.put(i, tmp);
 		}
-		return result;
 	}
 	
-	public static Map<Integer, Double> matrix_Sub() throws ArithmeticException{
+	public static void matrix_Sub() throws ArithmeticException{
 		if(mainMatrix.isEmpty() || subMatrix.isEmpty()) {
 			throw new ArithmeticException("One of matrices is empty!");
 		}
@@ -36,7 +36,7 @@ public class Matrix {
 			throw new ArithmeticException("Two matrices need to be same dimension");
 		}
 		
-		Map<Integer, Double> result = new HashMap<>();
+		result.clear();
 		for(int i = 0; i < rowA * colA; i++) {
 			double tmp = 0;
 			if(mainMatrix.containsKey(i)) {tmp += mainMatrix.get(i);}
@@ -45,10 +45,9 @@ public class Matrix {
 			else {throw new ArithmeticException();}
 			result.put(i, tmp);
 		}
-		return result;
 	}
 	
-	public static Map<Integer, Double> matrix_Mul() throws ArithmeticException{
+	public static void matrix_Mul() throws ArithmeticException{
 		if(mainMatrix.isEmpty() || subMatrix.isEmpty()) {
 			throw new ArithmeticException("One of matrices is empty!");
 		}
@@ -56,9 +55,7 @@ public class Matrix {
 			throw new ArithmeticException("One matrix column must be equal to another matrix row");
 		}
 		
-		Map<Integer, Double> result = new HashMap<>();
-		
-		
+		result.clear();
 		for(int i = 0; i < rowA * colB; i++) {
 			double tmp = 0;
 			for(int j = 0; j < colA; j++) {
@@ -66,6 +63,5 @@ public class Matrix {
 			}
 			result.put(i, tmp);
 		}
-		return result;
 	}
 }
