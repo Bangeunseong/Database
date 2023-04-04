@@ -7,7 +7,6 @@ import java.util.Stack;
 public class BasicArithmatic {
 	public static double mainMemory = 0;
 	public static StringBuffer mainExp = new StringBuffer();
-	public static String expFormat = "\\d+";	//Need to make!!
 	
 	//Return boolean if it is operator
 	public static boolean isOperand(char val) {
@@ -20,6 +19,7 @@ public class BasicArithmatic {
 		if(val.equals('(')) return 2;
 		else if(val.equals('+') || val.equals('-')) return 3;
 		else if(val.equals('/') || val.equals('*') || val.equals('%')) return 4;
+		else if(val.equals('^')) return 5;
 		else return -1;
 	}
 	//Return calculated value
@@ -29,6 +29,7 @@ public class BasicArithmatic {
 		else if(op.equals("*")) return v1 * v2;
 		else if(op.equals("/")) return v1 / v2;
 		else if(op.equals("%")) return v1 % v2;
+		else if(op.equals("^")) return Math.pow(v1, v2);
 		return -1;
 	}
 	//Convert formula

@@ -91,7 +91,7 @@ public class Calculator extends JFrame {
 				card_Layout.show(c, "Basic");
 			}
 			else if(jMenuItem.getText().equals("Matrix")) {
-				setSize(600,500);
+				setSize(785,500);
 				card_Layout.show(c, "Matrix");
 			}
 			else {
@@ -109,8 +109,9 @@ public class Calculator extends JFrame {
 		arithmetic_Panel.setLayout(new BorderLayout());
 		
 		//Formula_panel textarea
-		jArea_A = new JTextArea(8,300);
+		jArea_A = new JTextArea(4,300);
 		jArea_A.setEditable(false);
+		jArea_A.setFont(new Font("Dialog", 1, 20));
 		
 		//Operand, Operator, Function panel merged to main panel
 		main_Panel_A = new JPanel();
@@ -119,20 +120,24 @@ public class Calculator extends JFrame {
 		
 		//Operand_panel buttons
 		operand_Panel = new JPanel();
-		operand_Panel.setBackground(Color.LIGHT_GRAY);
 		operand_Panel.setLayout(new GridLayout(4,3,3,3));
 		
 		for(int i = 1; i <= 10; i++) {jbutton_Operands.add(new JButton(String.valueOf(i%10)));}
-		jbutton_Operands.add(new JButton("00")); jbutton_Operands.add(new JButton("."));
+		jbutton_Operands.add(new JButton("."));
 		jbutton_Operands.stream().forEach(s->{
 			s.addActionListener(new SelectAction_BasicListener());
-			s.setFont(new Font("Dialog", 0, 14));
+			s.setBackground(Color.ORANGE);
+			s.setFont(new Font("Dialog", 1, 14));
 			operand_Panel.add(s);
 		});
+		JButton resultButton = new JButton("=");
+		resultButton.setFont(new Font("Dialog", 1, 14));
+		resultButton.addActionListener(new SelectAction_BasicListener());
+		resultButton.setBackground(Color.ORANGE);
+		operand_Panel.add(resultButton);
 		
 		//Function_panel buttons
 		function_Panel = new JPanel();
-		function_Panel.setBackground(Color.LIGHT_GRAY);
 		function_Panel.setLayout(new GridLayout(1,6,3,3));
 		
 		functions.addAll(Arrays.asList("C", "CE", "M+", "M-", "MR", "MC"));
@@ -141,28 +146,25 @@ public class Calculator extends JFrame {
 		});
 		jbutton_functions.stream().forEach(s->{
 			s.addActionListener(new SelectAction_BasicListener());
-			s.setFont(new Font("Dialog", 0, 12));
+			s.setBackground(Color.ORANGE);
+			s.setFont(new Font("Dialog", 1, 12));
 			function_Panel.add(s);
 		});
 		
 		//Operator_panel buttons
 		operator_Panel = new JPanel();
-		operator_Panel.setBackground(Color.LIGHT_GRAY);
 		operator_Panel.setLayout(new GridLayout(4,2,3,3));
 		
-		operators.addAll(Arrays.asList("(", ")","+", "-", "*", "/", "%"));
+		operators.addAll(Arrays.asList("(", ")","+", "-", "*", "/", "%", "^"));
 		operators.stream().forEach(data->{
 			jbutton_Operators.add(new JButton(data));
 		});
 		jbutton_Operators.stream().forEach(s->{
 			s.addActionListener(new SelectAction_BasicListener());
-			s.setFont(new Font("Dialog", 0, 14));
+			s.setBackground(Color.ORANGE);
+			s.setFont(new Font("Dialog", 1, 14));
 			operator_Panel.add(s);
 		});
-		JButton resultButton = new JButton("=");
-		resultButton.setFont(new Font("Dialog", 0, 14));
-		resultButton.addActionListener(new SelectAction_BasicListener());
-		operator_Panel.add(resultButton);
 		
 		//Merge all panels to main panel
 		main_Panel_A.add(operand_Panel,BorderLayout.CENTER);
@@ -236,7 +238,7 @@ public class Calculator extends JFrame {
 		
 		for(int i = 0; i < Matrix.rowA * Matrix.colA; i++) {
 			jTextFields_A.add(new JTextField(50));
-			jTextFields_A.get(i).setFont(new Font("Dialog", 0, 12));
+			jTextFields_A.get(i).setFont(new Font("Dialog", 1, 12));
 			jTextFields_A.get(i).setName(String.valueOf(i));
 			jTextFields_A.get(i).setHorizontalAlignment(JTextField.RIGHT);
 		}
@@ -251,7 +253,7 @@ public class Calculator extends JFrame {
 		
 		for(int i = 0; i < Matrix.rowB * Matrix.colB; i++) {
 			jTextFields_B.add(new JTextField(50));
-			jTextFields_B.get(i).setFont(new Font("Dialog", 0, 12));
+			jTextFields_B.get(i).setFont(new Font("Dialog", 1, 12));
 			jTextFields_B.get(i).setName(String.valueOf(i));
 			jTextFields_B.get(i).setHorizontalAlignment(JTextField.RIGHT);
 		}
@@ -301,7 +303,6 @@ public class Calculator extends JFrame {
 					}
 					catch(ArithmeticException exp_M) {
 						exp_M.printStackTrace();
-						//TODO Later enter popup screen
 						JOptionPane.showMessageDialog(null, exp_M.getMessage());
 					}
 				}
@@ -317,7 +318,6 @@ public class Calculator extends JFrame {
 					}
 					catch(ArithmeticException exp_M) {
 						exp_M.printStackTrace();
-						//TODO Later enter popup screen
 						JOptionPane.showMessageDialog(null, exp_M.getMessage());
 					}
 				}
@@ -333,7 +333,6 @@ public class Calculator extends JFrame {
 					}
 					catch(ArithmeticException exp_M) {
 						exp_M.printStackTrace();
-						//TODO Later enter popup screen
 						JOptionPane.showMessageDialog(null, exp_M.getMessage());
 					}
 				}
@@ -342,7 +341,7 @@ public class Calculator extends JFrame {
 		}
 		jbutton_fucntions_M.stream().forEach(data->{
 			data.addActionListener(new SelectAction_MatrixListener());
-			data.setFont(new Font("Dialog", 0, 14));
+			data.setFont(new Font("Dialog", 1, 14));
 			function_Panel_M.add(data);
 		});
 		
@@ -362,7 +361,7 @@ public class Calculator extends JFrame {
 					matrixlayout_A.setRows(Matrix.rowA); matrixlayout_A.setColumns(Matrix.colA);
 					for(int i = 0; i < Matrix.rowA * Matrix.colA; i++) {
 						jTextFields_A.add(new JTextField(50));
-						jTextFields_A.get(i).setFont(new Font("Dialog", 0, 12));
+						jTextFields_A.get(i).setFont(new Font("Dialog", 1, 12));
 						jTextFields_A.get(i).setName(String.valueOf(i));
 						jTextFields_A.get(i).setHorizontalAlignment(JTextField.RIGHT);
 					}
@@ -381,7 +380,7 @@ public class Calculator extends JFrame {
 					matrixlayout_B.setRows(Matrix.rowB); matrixlayout_B.setColumns(Matrix.colB);
 					for(int i = 0; i < Matrix.rowB * Matrix.colB; i++) {
 						jTextFields_B.add(new JTextField(50));
-						jTextFields_B.get(i).setFont(new Font("Dialog", 0, 12));
+						jTextFields_B.get(i).setFont(new Font("Dialog", 1, 12));
 						jTextFields_B.get(i).setName(String.valueOf(i));
 						jTextFields_B.get(i).setHorizontalAlignment(JTextField.RIGHT);
 					}
@@ -395,6 +394,7 @@ public class Calculator extends JFrame {
 			JButton tmp1 = new JButton(data), tmp2 = new JButton(data);
 			tmp1.setName("ConfigA"); tmp1.addActionListener(new SelectAction_MatrixConfigListener());
 			tmp2.setName("ConfigB"); tmp2.addActionListener(new SelectAction_MatrixConfigListener());
+			tmp1.setFont(new Font("Dialog",1,12)); tmp2.setFont(new Font("Dialog",1,12));
 			matrixConfig_A.add(tmp1);
 			matrixConfig_B.add(tmp2);
 		});
@@ -433,6 +433,7 @@ public class Calculator extends JFrame {
 		setMenuBar();
 		
 		c = getContentPane(); c.setLayout(card_Layout);
+		c.setBackground(Color.LIGHT_GRAY);
 		c.add(arithmetic_Panel, "Basic");
 		c.add(matrix_Panel, "Matrix");
 		
