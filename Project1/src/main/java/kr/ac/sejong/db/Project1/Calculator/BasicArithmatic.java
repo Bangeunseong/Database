@@ -1,6 +1,7 @@
 package kr.ac.sejong.db.Project1.Calculator;
 
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
 
@@ -33,7 +34,7 @@ public class BasicArithmatic {
 		return -1;
 	}
 	//Convert formula
-	public static List<String> convert() {
+	public static List<String> convert() throws EmptyStackException {
 		List<String> result = new ArrayList<>();
 		Stack<Character> s = new Stack<>();
 		
@@ -75,7 +76,7 @@ public class BasicArithmatic {
 		return result;
 	}
 	//Calculate formula
-	public static double Calculate(List<String> reg) {
+	public static double Calculate(List<String> reg) throws EmptyStackException {
 		Stack<Double> s = new Stack<>();
 		
 		while(!reg.isEmpty()) {

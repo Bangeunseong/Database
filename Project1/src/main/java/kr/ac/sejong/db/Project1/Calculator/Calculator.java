@@ -11,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -65,6 +65,10 @@ public class Calculator extends JFrame {
 	public Map<Integer, Double> result = null;
 	
 	StringBuffer mainExp_M = new StringBuffer("--------------------Results--------------------\n");
+	
+	//Field for logic calculator
+	
+	
 	//--------------------------------------------------------
 	//MenuBar Setting
 	void setMenuBar() {
@@ -212,9 +216,15 @@ public class Calculator extends JFrame {
 				BasicArithmatic.mainMemory = 0;
 			}
 			else {
-				BasicArithmatic.mainMemory = BasicArithmatic.Calculate(BasicArithmatic.convert());
-				BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
-				BasicArithmatic.mainExp.append(BasicArithmatic.mainMemory);
+				try {
+					BasicArithmatic.mainMemory = BasicArithmatic.Calculate(BasicArithmatic.convert());
+					BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
+					BasicArithmatic.mainExp.append(BasicArithmatic.mainMemory);
+				}
+				catch(EmptyStackException exp_stack) {
+					exp_stack.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Wrong type of equation!");
+				}
 			}
 			jArea_A.setText(BasicArithmatic.mainExp.toString());
 		}
