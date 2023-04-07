@@ -15,6 +15,7 @@ import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 
+import javax.print.DocFlavor.STRING;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -34,12 +35,12 @@ public class Calculator extends JFrame {
 	Container c; CardLayout card_Layout;
 	
 	//Field for menubar
-	JMenuBar jMenuBar; JMenu jMenu; JMenuItem basicItem, matrixItem;
+	JMenuBar jMenuBar; JMenu jMenu; JMenuItem basicItem, matrixItem, bitlogicItem;
 	
 	//Field for arithmatic calculator
-	JPanel main_Panel_A;
+	JPanel arithmetic_Panel;
 	JTextArea jArea_A;
-	JPanel arithmetic_Panel; JPanel operand_Panel; JPanel function_Panel; JPanel operator_Panel;
+	JPanel main_Panel_A; JPanel operand_Panel; JPanel function_Panel; JPanel operator_Panel;
 	
 	private List<JButton> jbutton_Operands = new ArrayList<>();
 	private List<JButton> jbutton_Operators = new ArrayList<>();
@@ -67,7 +68,15 @@ public class Calculator extends JFrame {
 	StringBuffer mainExp_M = new StringBuffer("--------------------Results--------------------\n");
 	
 	//Field for logic calculator
+	JPanel bitlogic_Panel;
+	JTextArea jArea_L;
+	JPanel main_Panel_L; JPanel operand_Panel_L; JPanel operator_Panel_L; JPanel function_Panel_L;
 	
+	private List<String> functions_L = new ArrayList<>();
+	private List<String> operators_L = new ArrayList<>();
+	private List<JButton> jbutton_Operators_L = new ArrayList<>();
+	private List<JButton> jbutton_functions_L = new ArrayList<>();
+	private List<JButton> jbutton_Operands_L = new ArrayList<>();
 	
 	//--------------------------------------------------------
 	//MenuBar Setting
@@ -75,11 +84,12 @@ public class Calculator extends JFrame {
 		jMenuBar = new JMenuBar();
 		jMenu = new JMenu("Select");
 		
-		basicItem = new JMenuItem("Basic"); matrixItem = new JMenuItem("Matrix");
+		basicItem = new JMenuItem("Basic"); matrixItem = new JMenuItem("Matrix"); bitlogicItem = new JMenuItem("BitLogic");
 		basicItem.addActionListener(new SelectActionListener());
 		matrixItem.addActionListener(new SelectActionListener());
+		bitlogicItem.addActionListener(new SelectActionListener());
 		
-		jMenu.add(basicItem); jMenu.add(matrixItem);
+		jMenu.add(basicItem); jMenu.add(matrixItem); jMenu.add(bitlogicItem);
 		jMenuBar.add(jMenu);
 		setJMenuBar(jMenuBar);
 	}
@@ -88,7 +98,6 @@ public class Calculator extends JFrame {
 	class SelectActionListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			//TODO Logic calculator layout code
 			JMenuItem jMenuItem = (JMenuItem)e.getSource();
 			if(jMenuItem.getText().equals("Basic")) {
 				setSize(370,500);
@@ -97,6 +106,10 @@ public class Calculator extends JFrame {
 			else if(jMenuItem.getText().equals("Matrix")) {
 				setSize(785,500);
 				card_Layout.show(c, "Matrix");
+			}
+			else if(jMenuItem.getText().equals("BitLogic")) {
+				setSize(370,500);
+				card_Layout.show(c, "BitLogic");
 			}
 			else {
 				
@@ -184,7 +197,6 @@ public class Calculator extends JFrame {
 	class SelectAction_BasicListener implements ActionListener{
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Make exception method
 			JButton op_Button = (JButton)e.getSource();
 			if(jbutton_Operands.stream().anyMatch(data -> data.getText().equals(op_Button.getText()))) {
 				BasicArithmatic.mainExp.append(op_Button.getText());
@@ -430,6 +442,47 @@ public class Calculator extends JFrame {
 		matrix_Panel.add(new JScrollPane(jArea_M), BorderLayout.SOUTH);
 	}
 	//-----------------------------------------------------------
+	
+	//TODO Make BitLogic calculator layout---> textarea done, operand_panel_l done
+	void setBitLogicCalculator() {
+		bitlogic_Panel = new JPanel(new BorderLayout(3,3));
+		
+		//JTextArea -> Display formula that user created 
+		jArea_L = new JTextArea(); jArea_L.setEditable(false);
+		jArea_L.setFont(new Font("Dialog", 1, 20));
+		
+		//Main_Panel -> operand_Panel + operator_Panel + function_Panel
+		main_Panel_L = new JPanel(new BorderLayout(3,3));
+		main_Panel_L.setBorder(new TitledBorder(new LineBorder(Color.black), "Click buttons to create formula"));
+		
+		//Setting operand_Panel of BitLogic calculator
+		operand_Panel_L = new JPanel(new GridLayout(4,3,3,3));
+		for(int i = 1; i < 11; i++) {jbutton_Operands_L.add(new JButton(String.valueOf(i % 10)));}
+		jbutton_Operands_L.add(new JButton("."));
+		jbutton_Operands_L.stream().forEach(data->{
+			//TODO add actionlistener for operands of bitlogic calculator
+			data.addActionListener(null);
+			data.setBackground(Color.ORANGE);
+			data.setFont(new Font("Dialog", 1, 12));
+			operand_Panel_L.add(data);
+		});
+		
+		//Setting operator_Panel of BitLogic Calculator
+		operator_Panel_L = new JPanel(new GridLayout(4,4,3,3));
+		operators_L.addAll(Arrays.asList("+", "-", "<<" ,">>", "&", "|", "^", "<", "<=", ">", ">=", "!=", "and", "or"));
+		operators_L.stream().forEach(data->{
+			jbutton_Operators_L.add(new JButton(data));
+		});
+		jbutton_Operators_L.stream().forEach(data->{
+			//TODO add actionlistener for operators of bitlogic calculator
+			data.addActionListener(null);
+			data.setBackground(Color.ORANGE);
+			data.setFont(new Font("Dialog", 1, 12));
+			operator_Panel_L.add(data);
+		});
+		
+		
+	}
 	
 	//-----------------------------------------------------------
 	//Constructor

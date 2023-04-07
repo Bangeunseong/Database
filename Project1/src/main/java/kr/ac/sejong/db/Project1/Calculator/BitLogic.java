@@ -1,8 +1,5 @@
 package kr.ac.sejong.db.Project1.Calculator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.EmptyStackException;
 import java.util.List;
@@ -34,7 +31,6 @@ public class BitLogic {
 	
 	//Return result of calculation
 	public static Integer doOperator(String op, Integer v1, Integer v2) throws Exception {
-		//FIXME return type consistancy 
 		if(op.equals("+")) return v1 + v2;
 		else if(op.equals("-")) return v1 - v2;
 		else if(op.equals("<<")) return v1 << v2;
