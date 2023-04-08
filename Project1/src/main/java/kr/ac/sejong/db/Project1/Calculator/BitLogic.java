@@ -12,6 +12,7 @@ public class BitLogic {
 	//Return boolean value
 	public static boolean isOperand(char val) {
 		if(val >= '0' && val <= '9') return true;
+		else if(val == 'T' || val == 'F') return true;
 		return false;
 	}
 	
@@ -60,7 +61,12 @@ public class BitLogic {
 				while(ind < mainExp_L.length() && isOperand(mainExp_L.charAt(ind))) {
 					tmp.append(mainExp_L.charAt(ind++));
 				}
-				result.add(tmp.toString());
+				if(tmp.toString().equals("T"))
+					result.add(String.valueOf(1));
+				else if(tmp.toString().equals("F"))
+					result.add(String.valueOf(0));
+				else
+					result.add(tmp.toString());
 			}
 			else if(mainExp_L.charAt(ind) == '(') {
 				s.push(String.valueOf(mainExp_L.charAt(ind++)));

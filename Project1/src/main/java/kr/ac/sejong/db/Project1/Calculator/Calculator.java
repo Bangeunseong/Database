@@ -15,7 +15,6 @@ import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 
-import javax.print.DocFlavor.STRING;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -104,11 +103,11 @@ public class Calculator extends JFrame {
 				card_Layout.show(c, "Basic");
 			}
 			else if(jMenuItem.getText().equals("Matrix")) {
-				setSize(785,500);
+				setSize(785,420);
 				card_Layout.show(c, "Matrix");
 			}
 			else if(jMenuItem.getText().equals("BitLogic")) {
-				setSize(370,500);
+				setSize(450,500);
 				card_Layout.show(c, "BitLogic");
 			}
 			else {
@@ -221,8 +220,7 @@ public class Calculator extends JFrame {
 				BasicArithmatic.mainExp.delete(0, BasicArithmatic.mainExp.length());
 			}
 			else if(op_Button.getText().equals("MR")) {
-				if(BasicArithmatic.mainMemory >= 0) BasicArithmatic.mainExp.append("+" + String.valueOf(BasicArithmatic.mainMemory));
-				else BasicArithmatic.mainExp.append(String.valueOf(BasicArithmatic.mainMemory));
+				BasicArithmatic.mainExp.append(String.valueOf(BasicArithmatic.mainMemory));
 			}
 			else if(op_Button.getText().equals("MC")) {
 				BasicArithmatic.mainMemory = 0;
@@ -448,20 +446,65 @@ public class Calculator extends JFrame {
 		bitlogic_Panel = new JPanel(new BorderLayout(3,3));
 		
 		//JTextArea -> Display formula that user created 
-		jArea_L = new JTextArea(); jArea_L.setEditable(false);
+		jArea_L = new JTextArea(4,300); jArea_L.setEditable(false);
 		jArea_L.setFont(new Font("Dialog", 1, 20));
 		
 		//Main_Panel -> operand_Panel + operator_Panel + function_Panel
 		main_Panel_L = new JPanel(new BorderLayout(3,3));
 		main_Panel_L.setBorder(new TitledBorder(new LineBorder(Color.black), "Click buttons to create formula"));
 		
+		//ActionListener for operands, operators, functions
+		class SelectAction_BitlogicListener implements ActionListener{
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JButton button = (JButton)e.getSource();
+				if(jbutton_Operands_L.stream().anyMatch(data->data.getText().equals(button.getText()))) {
+					BitLogic.mainExp_L.append(button.getText());
+				}
+				else if(jbutton_Operators_L.stream().anyMatch(data->data.getText().equals(button.getText()))) {
+					BitLogic.mainExp_L.append(button.getText());
+				}
+				else if(button.getText().equals("C")) {
+					if(BitLogic.mainExp_L.length() > 0)
+						BitLogic.mainExp_L.delete(0, BitLogic.mainExp_L.length());
+				}
+				else if(button.getText().equals("CE")) {
+					if(BitLogic.mainExp_L.length() > 0)
+						BitLogic.mainExp_L.deleteCharAt(BitLogic.mainExp_L.length() - 1);
+				}
+				else if(button.getText().equals("MCOPY")) {
+					BitLogic.mainExp_L.append(String.valueOf(BasicArithmatic.mainMemory));
+				}
+				else if(button.getText().equals("MCLEAR")) {
+					BitLogic.mainMemory_L = false;
+				}
+				else {
+					try {
+						BitLogic.mainMemory_L = BitLogic.Calculate(BitLogic.convert_BitLogic());
+						if(BitLogic.mainMemory_L == true)
+							BitLogic.mainExp_L.replace(0, BitLogic.mainExp_L.length(), "T");
+						else BitLogic.mainExp_L.replace(0, BitLogic.mainExp_L.length(), "F");
+					}
+					catch(EmptyStackException exp_LS) {
+						exp_LS.printStackTrace();
+						JOptionPane.showMessageDialog(null, exp_LS.getMessage());
+					}
+					catch(Exception exp_L) {
+						exp_L.printStackTrace();
+						JOptionPane.showMessageDialog(null, exp_L.getMessage());
+					}
+				}
+				jArea_L.setText(BitLogic.mainExp_L.toString());
+			}
+		}
+		
 		//Setting operand_Panel of BitLogic calculator
 		operand_Panel_L = new JPanel(new GridLayout(4,3,3,3));
 		for(int i = 1; i < 11; i++) {jbutton_Operands_L.add(new JButton(String.valueOf(i % 10)));}
-		jbutton_Operands_L.add(new JButton("."));
+		jbutton_Operands_L.add(new JButton("T")); jbutton_Operands_L.add(new JButton("F"));
 		jbutton_Operands_L.stream().forEach(data->{
 			//TODO add actionlistener for operands of bitlogic calculator
-			data.addActionListener(null);
+			data.addActionListener(new SelectAction_BitlogicListener());
 			data.setBackground(Color.ORANGE);
 			data.setFont(new Font("Dialog", 1, 12));
 			operand_Panel_L.add(data);
@@ -469,36 +512,64 @@ public class Calculator extends JFrame {
 		
 		//Setting operator_Panel of BitLogic Calculator
 		operator_Panel_L = new JPanel(new GridLayout(4,4,3,3));
-		operators_L.addAll(Arrays.asList("+", "-", "<<" ,">>", "&", "|", "^", "<", "<=", ">", ">=", "!=", "and", "or"));
+		operators_L.addAll(Arrays.asList("(", ")", "+", "-", "<<" ,">>", "&", "|", "^", "<", "<=", ">", ">=", "!=", "and", "or"));
 		operators_L.stream().forEach(data->{
 			jbutton_Operators_L.add(new JButton(data));
 		});
 		jbutton_Operators_L.stream().forEach(data->{
 			//TODO add actionlistener for operators of bitlogic calculator
-			data.addActionListener(null);
+			data.addActionListener(new SelectAction_BitlogicListener());
 			data.setBackground(Color.ORANGE);
 			data.setFont(new Font("Dialog", 1, 12));
 			operator_Panel_L.add(data);
 		});
 		
+		//Setting function_Panel of BitLogic Calculator
+		function_Panel_L = new JPanel(new GridLayout(1,5,3,3));
+		functions_L.addAll(Arrays.asList("C","CE","MCOPY","MCLEAR"));
+		functions_L.stream().forEach(data->{
+			jbutton_functions_L.add(new JButton(data));
+		});
+		jbutton_functions_L.stream().forEach(data->{
+			data.addActionListener(new SelectAction_BitlogicListener());
+			data.setBackground(Color.ORANGE);
+			data.setFont(new Font("Dialog",1,12));
+			function_Panel_L.add(data);
+		});
+		JButton result_LButton = new JButton("=");
+		result_LButton.addActionListener(new SelectAction_BitlogicListener());
+		result_LButton.setBackground(Color.ORANGE);
+		result_LButton.setFont(new Font("Dialog", 1, 12));
+		function_Panel_L.add(result_LButton);
 		
+		//Setting main_Panel for Bitlogic Calculator
+		main_Panel_L.add(operand_Panel_L, BorderLayout.CENTER);
+		main_Panel_L.add(operator_Panel_L,BorderLayout.EAST);
+		main_Panel_L.add(function_Panel_L, BorderLayout.NORTH);
+		
+		//Setting bitlogic_Panel for Bitlogic Calculator
+		bitlogic_Panel.add(jArea_L, BorderLayout.NORTH);
+		bitlogic_Panel.add(main_Panel_L, BorderLayout.CENTER);
 	}
 	
 	//-----------------------------------------------------------
 	//Constructor
 	public Calculator() {
 		setTitle("Calculator"); setSize(370,500);
+		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		card_Layout = new CardLayout(5,5);
 		
 		setArithmaticCalculator();
 		setMatrixCalculator();
+		setBitLogicCalculator();
 		setMenuBar();
 		
 		c = getContentPane(); c.setLayout(card_Layout);
 		c.setBackground(Color.LIGHT_GRAY);
 		c.add(arithmetic_Panel, "Basic");
 		c.add(matrix_Panel, "Matrix");
+		c.add(bitlogic_Panel, "BitLogic");
 		
 		setVisible(true);
 	}
