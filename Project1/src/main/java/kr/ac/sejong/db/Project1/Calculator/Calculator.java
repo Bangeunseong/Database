@@ -3,19 +3,30 @@ package kr.ac.sejong.db.Project1.Calculator;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -27,6 +38,7 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListDataListener;
 
 public class Calculator extends JFrame {
 	//-------------------------------------------------------
@@ -34,7 +46,7 @@ public class Calculator extends JFrame {
 	Container c; CardLayout card_Layout;
 	
 	//Field for menubar
-	JMenuBar jMenuBar; JMenu jMenu; JMenuItem basicItem, matrixItem, bitlogicItem;
+	JMenuBar jMenuBar; JMenu jMenu; JMenuItem basicItem, matrixItem, bitlogicItem, unitItem;
 	
 	//Field for arithmatic calculator
 	JPanel arithmetic_Panel;
@@ -77,18 +89,46 @@ public class Calculator extends JFrame {
 	private List<JButton> jbutton_functions_L = new ArrayList<>();
 	private List<JButton> jbutton_Operands_L = new ArrayList<>();
 	
+	//Field for UnitConverter
+	JPanel unitconverter_Panel;
+	JPanel main_Panel_Unit;
+	
+	JPanel topicSelection_Panel;
+	
+	Label convertLabel;
+	JPanel input_Panel;
+	JPanel comboBoxA_Panel, comboBoxB_Panel;
+	JTextField inputTextField_A, inputTextField_B;
+	JComboBox<String> comboBoxA, comboBoxB;
+	
+	JPanel textfields_Panel = new JPanel(new GridLayout(5,3,5,2));
+	
+	private int cnt = 0;
+	private List<String> stringTopic = Arrays.asList("Length","Area","Weight","Volume","Temp.","Pressure","Velocity","Data");
+	private List<JButton> selectTopic = new ArrayList<>();
+	private List<String> scaleOfLength_S = Arrays.asList("mm","cm","m","km","in","ft","yd","mile","자","간","정","리","해리");
+	private List<String> scaleOfArea_S = Arrays.asList("m^2","a","ha","km^2","ft^2","yd^2","ac","평방자","평","단보","정보");
+	private List<String> scaleOfWeight_S = Arrays.asList("mg","g","kg","t","kt","gr","oz","lb","돈","냥","근","관");
+	private List<String> scaleOfVolume_S = Arrays.asList("cc","ml","dl","l","cm^3","m^3","in^3","ft^3","yd^3","gal","bbl","oz","홉","되","말");
+	private List<String> scaleOfTemp_S = Arrays.asList("C","F","K","R");
+	private List<String> scaleOfPressure_S = Arrays.asList("atm","Pa","hPa","kPa","MPa","dyne/cm^2","mb","bar","kgf/cm^2","psi","mmHg","inchHg","mmH2O","inchH2O");
+	private List<String> scaleOfVelocity_S = Arrays.asList("m/s","m/h","km/s","km/h","in/s","in/h","ft/s","ft/h","mi/s","mi/h","kn","mach");
+	private List<String> scaleOfDataCapacity_S = Arrays.asList("bit", "B", "KB", "MB","GB","TB","PB","EB");
+	//--------------------------------------------------------
+	
 	//--------------------------------------------------------
 	//MenuBar Setting
 	void setMenuBar() {
 		jMenuBar = new JMenuBar();
 		jMenu = new JMenu("Select");
 		
-		basicItem = new JMenuItem("Basic"); matrixItem = new JMenuItem("Matrix"); bitlogicItem = new JMenuItem("BitLogic");
+		basicItem = new JMenuItem("Basic"); matrixItem = new JMenuItem("Matrix"); bitlogicItem = new JMenuItem("BitLogic"); unitItem = new JMenuItem("Unit");
 		basicItem.addActionListener(new SelectActionListener());
 		matrixItem.addActionListener(new SelectActionListener());
 		bitlogicItem.addActionListener(new SelectActionListener());
+		unitItem.addActionListener(new SelectActionListener());
 		
-		jMenu.add(basicItem); jMenu.add(matrixItem); jMenu.add(bitlogicItem);
+		jMenu.add(basicItem); jMenu.add(matrixItem); jMenu.add(bitlogicItem); jMenu.add(unitItem);
 		jMenuBar.add(jMenu);
 		setJMenuBar(jMenuBar);
 	}
@@ -110,8 +150,9 @@ public class Calculator extends JFrame {
 				setSize(450,500);
 				card_Layout.show(c, "BitLogic");
 			}
-			else {
-				
+			else if(jMenuItem.getText().equals("Unit")){
+				setSize(650,420);
+				card_Layout.show(c, "Unit");
 			}
 		}
 	}
@@ -441,7 +482,8 @@ public class Calculator extends JFrame {
 	}
 	//-----------------------------------------------------------
 	
-	//TODO Make BitLogic calculator layout---> textarea done, operand_panel_l done
+	//-----------------------------------------------------------
+	//Setting Bitlogic Calculator
 	void setBitLogicCalculator() {
 		bitlogic_Panel = new JPanel(new BorderLayout(3,3));
 		
@@ -551,6 +593,355 @@ public class Calculator extends JFrame {
 		bitlogic_Panel.add(jArea_L, BorderLayout.NORTH);
 		bitlogic_Panel.add(main_Panel_L, BorderLayout.CENTER);
 	}
+	//-----------------------------------------------------------
+	
+	//-----------------------------------------------------------
+	//Setting Unit Converter
+	void setUnitConverter() {
+		//----------------------------------------------------------------------
+		//Setting ComboBoxes --> FIXME need to add itemlistener
+		class SelectAction_ComboBoxItemListener implements ItemListener{
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				if(e.getStateChange() == ItemEvent.SELECTED) {
+					if(scaleOfLength_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfLength_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfArea_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfArea_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfPressure_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfPressure_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfWeight_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfWeight_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfVolume_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfVolume_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfVelocity_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfVelocity_S.size();						
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfTemp_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfTemp_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					else if(scaleOfDataCapacity_S.contains(comboBoxA.getSelectedItem())) {
+						cnt = scaleOfDataCapacity_S.size();
+						inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+					}
+					
+					textfields_Panel.removeAll();
+					for(int i = 0; i < cnt; i++) {
+						JTextField tmp = new JTextField();
+						if(scaleOfLength_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfLength_S.get(i));
+						}
+						else if(scaleOfArea_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfArea_S.get(i));
+						}
+						else if(scaleOfWeight_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfWeight_S.get(i));
+						}
+						else if(scaleOfVolume_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVolume_S.get(i));
+						}
+						else if(scaleOfVelocity_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVelocity_S.get(i));
+						}
+						else if(scaleOfTemp_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfTemp_S.get(i));
+						}
+						else if(scaleOfPressure_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfPressure_S.get(i));
+						}
+						else if(scaleOfDataCapacity_S.contains(comboBoxA.getSelectedItem())) {
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfDataCapacity_S.get(i));
+						}
+						textfields_Panel.add(tmp);
+					}
+							
+					inputTextField_B.revalidate();
+					inputTextField_B.repaint();
+					textfields_Panel.revalidate();
+					textfields_Panel.repaint();
+				}
+			}
+		}		
+		comboBoxA = new JComboBox<>(); comboBoxB = new JComboBox<>();
+		comboBoxA.setModel(new DefaultComboBoxModel<>()); comboBoxB.setModel(new DefaultComboBoxModel<>());
+		
+		//Setting inputPanel
+		input_Panel = new JPanel(new FlowLayout(FlowLayout.CENTER,5,0));
+				
+		//Setting inputPanel
+		inputTextField_A = new JTextField(15); 
+		inputTextField_A.setFont(new Font("Dialog",1,12));
+		inputTextField_A.setText(String.valueOf(0));
+		inputTextField_A.addKeyListener(new KeyAdapter() {
+			public void keyTyped(KeyEvent e) {
+				char c = e.getKeyChar();
+				if(!((Character.isDigit(c)) || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE || c == KeyEvent.VK_ENTER || c == '.')) {
+					getToolkit().beep();
+					e.consume();
+				}
+			}
+		});
+		inputTextField_A.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				UnitConverter.mainMemory_Unit = Double.valueOf(e.getActionCommand());
+				textfields_Panel.removeAll();
+				for(int i = 0; i < cnt; i++) {
+					JTextField tmp = new JTextField();
+					if(scaleOfLength_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfLength_S.get(i));
+					}
+					else if(scaleOfArea_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfArea_S.get(i));
+					}
+					else if(scaleOfWeight_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfWeight_S.get(i));
+					}
+					else if(scaleOfVolume_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVolume_S.get(i));
+					}
+					else if(scaleOfVelocity_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVelocity_S.get(i));
+					}
+					else if(scaleOfTemp_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfTemp_S.get(i));
+					}
+					else if(scaleOfPressure_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfPressure_S.get(i));
+					}
+					else if(scaleOfDataCapacity_S.contains(comboBoxA.getSelectedItem())) {
+						tmp.setEditable(false);
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfDataCapacity_S.get(i));
+					}
+					textfields_Panel.add(tmp);
+				}
+				if(scaleOfLength_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfArea_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfPressure_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfWeight_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfVolume_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfVelocity_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfTemp_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				else if(scaleOfDataCapacity_S.contains(comboBoxA.getSelectedItem()))
+					inputTextField_B.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex())));
+				
+				inputTextField_B.revalidate();
+				inputTextField_B.repaint();
+				textfields_Panel.revalidate();
+				textfields_Panel.repaint();
+			}
+		});
+		inputTextField_A.setHorizontalAlignment(JTextField.RIGHT);
+		inputTextField_B = new JTextField(15);
+		inputTextField_B.setFont(new Font("Dialog",1,12));
+		inputTextField_B.setEditable(false);
+		inputTextField_B.setHorizontalAlignment(JTextField.RIGHT);
+			
+		//Setting merged panels -> combobox + jtextfield
+		comboBoxA_Panel = new JPanel(new BorderLayout()); comboBoxB_Panel = new JPanel(new BorderLayout());
+		comboBoxA_Panel.add(inputTextField_A,BorderLayout.CENTER); comboBoxA_Panel.add(comboBoxA,BorderLayout.EAST);
+		comboBoxB_Panel.add(inputTextField_B,BorderLayout.CENTER); comboBoxB_Panel.add(comboBoxB,BorderLayout.EAST);
+		
+		//Setting Label
+		convertLabel = new Label("->");
+		convertLabel.setFont(new Font("Dialog",1,12));
+		input_Panel.add(comboBoxA_Panel); input_Panel.add(convertLabel); input_Panel.add(comboBoxB_Panel);		
+		//Buttons for selection of topic
+		topicSelection_Panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		
+		stringTopic.stream().forEach(data->{
+			selectTopic.add(new JButton(data));
+		});
+		selectTopic.stream().forEach(data->{
+			data.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					JButton button = (JButton)e.getSource();
+					comboBoxA.removeAllItems(); comboBoxB.removeAllItems();
+					comboBoxA.removeItemListener(comboBoxA.getItemListeners()[comboBoxA.getItemListeners().length - 1]);
+					comboBoxB.removeItemListener(comboBoxB.getItemListeners()[comboBoxB.getItemListeners().length - 1]);
+					textfields_Panel.removeAll();
+					if(button.getText().equals("Length")) {
+						cnt = scaleOfLength_S.size();
+						scaleOfLength_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfLength_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfLength_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Area")) {
+						cnt = scaleOfArea_S.size();
+						scaleOfArea_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfArea_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfArea_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Weight")) {
+						cnt = scaleOfWeight_S.size();
+						scaleOfWeight_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfWeight_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfWeight_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Volume")) {
+						cnt = scaleOfVolume_S.size();
+						scaleOfVolume_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfVolume_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVolume_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Temp.")) {
+						cnt = scaleOfTemp_S.size();
+						scaleOfTemp_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfTemp_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex()))+ "\t" + scaleOfTemp_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Pressure")) {
+						cnt = scaleOfPressure_S.size();
+						scaleOfPressure_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfPressure_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfPressure_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Velocity")) {
+						cnt = scaleOfVelocity_S.size();
+						scaleOfVelocity_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfVelocity_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVelocity_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					else if(button.getText().equals("Data")) {
+						cnt = scaleOfDataCapacity_S.size();
+						scaleOfDataCapacity_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
+						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
+						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
+						for(int i = 0;i < scaleOfDataCapacity_S.size();i++) {
+							JTextField tmp = new JTextField();
+							tmp.setEditable(false);
+							tmp.setBorder(new LineBorder(Color.WHITE));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfDataCapacity_S.get(i));
+							textfields_Panel.add(tmp);
+						}
+					}
+					comboBoxA.addItemListener(new SelectAction_ComboBoxItemListener()); comboBoxB.addItemListener(new SelectAction_ComboBoxItemListener());
+					
+					inputTextField_B.revalidate();
+					inputTextField_B.repaint();
+					textfields_Panel.revalidate();
+					textfields_Panel.repaint();
+				}
+			});
+			data.setBackground(Color.WHITE);
+			data.setFont(new Font("Dialog",0,12));
+			topicSelection_Panel.add(data);
+		});
+		//----------------------------------------------------------------------
+		
+		//------------------------------------------------------------------------
+		//Setting Mainpanel, unitconverterpanel
+		selectTopic.get(0).doClick();
+		main_Panel_Unit = new JPanel(new BorderLayout());
+		main_Panel_Unit.add(topicSelection_Panel, BorderLayout.NORTH);
+		main_Panel_Unit.add(input_Panel, BorderLayout.CENTER);
+		
+		unitconverter_Panel = new JPanel(new BorderLayout(0,30));
+		unitconverter_Panel.add(main_Panel_Unit,BorderLayout.NORTH);
+		unitconverter_Panel.add(textfields_Panel,BorderLayout.CENTER);
+		
+		//------------------------------------------------------------------------
+	}
 	
 	//-----------------------------------------------------------
 	//Constructor
@@ -563,6 +954,7 @@ public class Calculator extends JFrame {
 		setArithmaticCalculator();
 		setMatrixCalculator();
 		setBitLogicCalculator();
+		setUnitConverter();
 		setMenuBar();
 		
 		c = getContentPane(); c.setLayout(card_Layout);
@@ -570,6 +962,7 @@ public class Calculator extends JFrame {
 		c.add(arithmetic_Panel, "Basic");
 		c.add(matrix_Panel, "Matrix");
 		c.add(bitlogic_Panel, "BitLogic");
+		c.add(unitconverter_Panel, "Unit");
 		
 		setVisible(true);
 	}
