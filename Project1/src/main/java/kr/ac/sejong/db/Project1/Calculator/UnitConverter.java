@@ -5,7 +5,6 @@ import java.util.List;
 
 public class UnitConverter {
 	public static double mainMemory_Unit = 0;
-	public static double resultMemory_Unit = 0;
 	
 	//scale_factor of length, area, weight, volume, pressure, velocity, datacapacity
 	public static List<Double> scaleOfLength = Arrays.asList(

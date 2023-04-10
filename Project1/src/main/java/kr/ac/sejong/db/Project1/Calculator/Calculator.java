@@ -40,7 +40,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListDataListener;
 
-public class Calculator extends JFrame {
+public final class Calculator extends JFrame {
 	//-------------------------------------------------------
 	//Field for main_container
 	Container c; CardLayout card_Layout;
@@ -114,6 +114,9 @@ public class Calculator extends JFrame {
 	private List<String> scaleOfPressure_S = Arrays.asList("atm","Pa","hPa","kPa","MPa","dyne/cm^2","mb","bar","kgf/cm^2","psi","mmHg","inchHg","mmH2O","inchH2O");
 	private List<String> scaleOfVelocity_S = Arrays.asList("m/s","m/h","km/s","km/h","in/s","in/h","ft/s","ft/h","mi/s","mi/h","kn","mach");
 	private List<String> scaleOfDataCapacity_S = Arrays.asList("bit", "B", "KB", "MB","GB","TB","PB","EB");
+	
+	
+	
 	//--------------------------------------------------------
 	
 	//--------------------------------------------------------
