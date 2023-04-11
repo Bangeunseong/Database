@@ -15,6 +15,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.image.ColorModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EmptyStackException;
@@ -941,7 +942,7 @@ public final class Calculator extends JFrame {
 					textfields_Panel.repaint();
 				}
 			});
-			data.setBackground(Color.CYAN);
+			data.setBackground(Color.getHSBColor(0.4f, 0.3f, 1f));
 			data.setFont(new Font("Dialog",1,12));
 			topicSelection_Panel.add(data);
 		});
