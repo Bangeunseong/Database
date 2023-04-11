@@ -706,7 +706,7 @@ public final class Calculator extends JFrame {
 		inputTextField_A.addKeyListener(new KeyAdapter() {
 			public void keyTyped(KeyEvent e) {
 				char c = e.getKeyChar();
-				if(!((Character.isDigit(c)) || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE || c == KeyEvent.VK_ENTER || c == '.')) {
+				if(!((Character.isDigit(c)) || c == KeyEvent.VK_BACK_SPACE || c == KeyEvent.VK_DELETE || c == KeyEvent.VK_ENTER || c == '.' || c == '-')) {
 					getToolkit().beep();
 					e.consume();
 				}
@@ -796,8 +796,9 @@ public final class Calculator extends JFrame {
 		comboBoxB_Panel.add(inputTextField_B,BorderLayout.CENTER); comboBoxB_Panel.add(comboBoxB,BorderLayout.EAST);
 		
 		//Setting Label
-		convertLabel = new Label("->");
+		convertLabel = new Label("=>");
 		convertLabel.setFont(new Font("Dialog",1,12));
+		convertLabel.setAlignment(Label.CENTER);
 		input_Panel.add(comboBoxA_Panel); input_Panel.add(convertLabel); input_Panel.add(comboBoxB_Panel);		
 		//Buttons for selection of topic
 		topicSelection_Panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -875,7 +876,7 @@ public final class Calculator extends JFrame {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), comboBoxB.getSelectedIndex()))+ "\t" + scaleOfTemp_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i))+ "\t" + scaleOfTemp_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
