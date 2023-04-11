@@ -3,12 +3,12 @@ package kr.ac.sejong.db.Project1.Calculator;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -21,12 +21,9 @@ import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.InputVerifier;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -38,7 +35,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListDataListener;
 
 public final class Calculator extends JFrame {
 	//-------------------------------------------------------
@@ -643,45 +639,33 @@ public final class Calculator extends JFrame {
 					textfields_Panel.removeAll();
 					for(int i = 0; i < cnt; i++) {
 						JTextField tmp = new JTextField();
+						tmp.setEditable(false);
+						tmp.setHorizontalAlignment(JTextField.RIGHT);
+						tmp.setFont(new Font("Dialog",1,12));
+						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
 						if(scaleOfLength_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfLength_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + scaleOfLength_S.get(i));
 						}
 						else if(scaleOfArea_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfArea_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + scaleOfArea_S.get(i));
 						}
 						else if(scaleOfWeight_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfWeight_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + scaleOfWeight_S.get(i));
 						}
 						else if(scaleOfVolume_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVolume_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + scaleOfVolume_S.get(i));
 						}
 						else if(scaleOfVelocity_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVelocity_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + scaleOfVelocity_S.get(i));
 						}
 						else if(scaleOfTemp_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfTemp_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i)) + scaleOfTemp_S.get(i));
 						}
 						else if(scaleOfPressure_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfPressure_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + scaleOfPressure_S.get(i));
 						}
 						else if(scaleOfDataCapacity_S.contains(comboBoxA.getSelectedItem())) {
-							tmp.setEditable(false);
-							tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfDataCapacity_S.get(i));
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + scaleOfDataCapacity_S.get(i));
 						}
 						textfields_Panel.add(tmp);
 					}
@@ -697,10 +681,10 @@ public final class Calculator extends JFrame {
 		comboBoxA.setModel(new DefaultComboBoxModel<>()); comboBoxB.setModel(new DefaultComboBoxModel<>());
 		
 		//Setting inputPanel
-		input_Panel = new JPanel(new FlowLayout(FlowLayout.CENTER,5,0));
-				
+		input_Panel = new JPanel(new FlowLayout(FlowLayout.CENTER,5,10));
+		
 		//Setting inputPanel
-		inputTextField_A = new JTextField(15); 
+		inputTextField_A = new JTextField(20); 
 		inputTextField_A.setFont(new Font("Dialog",1,12));
 		inputTextField_A.setText(String.valueOf(0));
 		inputTextField_A.addKeyListener(new KeyAdapter() {
@@ -719,45 +703,33 @@ public final class Calculator extends JFrame {
 				textfields_Panel.removeAll();
 				for(int i = 0; i < cnt; i++) {
 					JTextField tmp = new JTextField();
+					tmp.setEditable(false);
+					tmp.setFont(new Font("Dialog",1,12));
+					tmp.setHorizontalAlignment(JTextField.CENTER);
+					tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
 					if(scaleOfLength_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfLength_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + scaleOfLength_S.get(i));
 					}
 					else if(scaleOfArea_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfArea_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + scaleOfArea_S.get(i));
 					}
 					else if(scaleOfWeight_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfWeight_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + scaleOfWeight_S.get(i));
 					}
 					else if(scaleOfVolume_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVolume_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + scaleOfVolume_S.get(i));
 					}
 					else if(scaleOfVelocity_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVelocity_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + scaleOfVelocity_S.get(i));
 					}
 					else if(scaleOfTemp_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
 						tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfTemp_S.get(i));
 					}
 					else if(scaleOfPressure_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfPressure_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + scaleOfPressure_S.get(i));
 					}
 					else if(scaleOfDataCapacity_S.contains(comboBoxA.getSelectedItem())) {
-						tmp.setEditable(false);
-						tmp.setBorder(new LineBorder(Color.LIGHT_GRAY));
-						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfDataCapacity_S.get(i));
+						tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + scaleOfDataCapacity_S.get(i));
 					}
 					textfields_Panel.add(tmp);
 				}
@@ -785,7 +757,7 @@ public final class Calculator extends JFrame {
 			}
 		});
 		inputTextField_A.setHorizontalAlignment(JTextField.RIGHT);
-		inputTextField_B = new JTextField(15);
+		inputTextField_B = new JTextField(20);
 		inputTextField_B.setFont(new Font("Dialog",1,12));
 		inputTextField_B.setEditable(false);
 		inputTextField_B.setHorizontalAlignment(JTextField.RIGHT);
@@ -802,6 +774,7 @@ public final class Calculator extends JFrame {
 		input_Panel.add(comboBoxA_Panel); input_Panel.add(convertLabel); input_Panel.add(comboBoxB_Panel);		
 		//Buttons for selection of topic
 		topicSelection_Panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topicSelection_Panel.setBorder(new TitledBorder(new LineBorder(Color.BLACK),"Click button to change topic!"));
 		
 		stringTopic.stream().forEach(data->{
 			selectTopic.add(new JButton(data));
@@ -823,8 +796,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfLength_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfLength_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfLength, comboBoxA.getSelectedIndex(), i)) + scaleOfLength_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -836,8 +811,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfArea_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfArea_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfArea, comboBoxA.getSelectedIndex(), i)) + scaleOfArea_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -849,8 +826,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfWeight_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfWeight_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfWeight, comboBoxA.getSelectedIndex(), i)) + scaleOfWeight_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -862,8 +841,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfVolume_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVolume_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVolume, comboBoxA.getSelectedIndex(), i)) + scaleOfVolume_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -875,8 +856,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfTemp_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i))+ "\t" + scaleOfTemp_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfTemp(comboBoxA.getSelectedIndex(), i)) + scaleOfTemp_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -888,8 +871,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfPressure_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfPressure_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfPressure, comboBoxA.getSelectedIndex(), i)) + scaleOfPressure_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -901,8 +886,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfVelocity_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfVelocity_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfVelocity, comboBoxA.getSelectedIndex(), i)) + scaleOfVelocity_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -914,8 +901,10 @@ public final class Calculator extends JFrame {
 						for(int i = 0;i < scaleOfDataCapacity_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
+							tmp.setFont(new Font("Dialog",1,12));
 							tmp.setBorder(new LineBorder(Color.WHITE));
-							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + "\t" + scaleOfDataCapacity_S.get(i));
+							tmp.setHorizontalAlignment(JTextField.CENTER);
+							tmp.setText(String.valueOf(UnitConverter.convertOfUnit(UnitConverter.scaleOfDataCapacity, comboBoxA.getSelectedIndex(), i)) + scaleOfDataCapacity_S.get(i));
 							textfields_Panel.add(tmp);
 						}
 					}
@@ -927,8 +916,9 @@ public final class Calculator extends JFrame {
 					textfields_Panel.repaint();
 				}
 			});
-			data.setBackground(Color.WHITE);
-			data.setFont(new Font("Dialog",0,12));
+			data.setBackground(Color.ORANGE);
+			data.setHorizontalAlignment(JButton.CENTER);
+			data.setFont(new Font("Dialog",1,12));
 			topicSelection_Panel.add(data);
 		});
 		//----------------------------------------------------------------------
@@ -940,7 +930,7 @@ public final class Calculator extends JFrame {
 		main_Panel_Unit.add(topicSelection_Panel, BorderLayout.NORTH);
 		main_Panel_Unit.add(input_Panel, BorderLayout.CENTER);
 		
-		unitconverter_Panel = new JPanel(new BorderLayout(0,30));
+		unitconverter_Panel = new JPanel(new BorderLayout(0,0));
 		unitconverter_Panel.add(main_Panel_Unit,BorderLayout.NORTH);
 		unitconverter_Panel.add(textfields_Panel,BorderLayout.CENTER);
 		
