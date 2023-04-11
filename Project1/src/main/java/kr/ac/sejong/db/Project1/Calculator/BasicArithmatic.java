@@ -1,15 +1,13 @@
 package kr.ac.sejong.db.Project1.Calculator;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.EmptyStackException;
 import java.util.List;
 import java.util.Stack;
 
 public class BasicArithmatic {
-	public static StringBuffer mainExp = new StringBuffer();
 	public static double mainMemory = 0;
+	public static StringBuffer mainExp = new StringBuffer();
 	
 	//Return boolean if it is operator
 	public static boolean isOperand(char val) {
@@ -22,6 +20,7 @@ public class BasicArithmatic {
 		if(val.equals('(')) return 2;
 		else if(val.equals('+') || val.equals('-')) return 3;
 		else if(val.equals('/') || val.equals('*') || val.equals('%')) return 4;
+		else if(val.equals('^')) return 5;
 		else return -1;
 	}
 	//Return calculated value
@@ -31,14 +30,16 @@ public class BasicArithmatic {
 		else if(op.equals("*")) return v1 * v2;
 		else if(op.equals("/")) return v1 / v2;
 		else if(op.equals("%")) return v1 % v2;
+		else if(op.equals("^")) return Math.pow(v1, v2);
 		return -1;
 	}
 	//Convert formula
-	public static List<String> convert() {
+	public static List<String> convert() throws EmptyStackException {
 		List<String> result = new ArrayList<>();
 		Stack<Character> s = new Stack<>();
 		
 		int ind = 0;
+		
 		while(ind < mainExp.length()) {
 			StringBuffer tmp = new StringBuffer();
 			if(isOperand(mainExp.charAt(ind))) {
@@ -60,6 +61,7 @@ public class BasicArithmatic {
 				//System.out.println("Check close symbol");
 			}
 			else {
+				if(ind == 0 || mainExp.charAt(ind - 1) == '(') {result.add(String.valueOf(0));}
 				while(!s.isEmpty() && (returnPriority(mainExp.charAt(ind)) <= returnPriority(s.peek()))) {
 					result.add(String.valueOf(s.pop()));
 				}
@@ -74,7 +76,7 @@ public class BasicArithmatic {
 		return result;
 	}
 	//Calculate formula
-	public static double Calculate(List<String> reg) {
+	public static double Calculate(List<String> reg) throws EmptyStackException {
 		Stack<Double> s = new Stack<>();
 		
 		while(!reg.isEmpty()) {
@@ -87,16 +89,4 @@ public class BasicArithmatic {
 		}
 		return s.pop();
 	}
-	//Main
-	public static void main(String[] args) throws IOException {
-		// TODO Auto-generated method stub
-		BufferedReader r = new BufferedReader(new InputStreamReader(System.in));
-		
-		mainExp.append(r.readLine());
-		
-		List<String> reg = convert();
-		System.out.println("Result: " + Calculate(reg));
-		r.close();
-	}
-
 }
