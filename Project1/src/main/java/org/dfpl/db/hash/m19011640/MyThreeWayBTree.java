@@ -69,11 +69,11 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			while(true) {
 				int i = 0;
 				for(Integer key : base.getKeyList()) {
-					if(ins.intValue() < key) i++;
+					if(ins.intValue() < key) break;
 					else if(ins.intValue() == key) return true;
-					else break;
+					else i++;
 				}
-				try {base = base.getChildrenList().get(i - 1);}
+				try {base = base.getChildrenList().get(i);}
 				catch(IndexOutOfBoundsException e) {return false;}
 			}
 		}
@@ -194,11 +194,11 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			Outter:while(true) {
 				int i = 0;
 				for(Integer val : base.getKeyList()) {
-					if(val < key.intValue()) i++;
-					else if(val == key.intValue()) break Outter; 
-					else break;
+					if(key.intValue() < val) break;
+					else if(val == key.intValue()) break Outter;
+					else i++;
 				}
-				try {base = base.getChildrenList().get(i - 1);}
+				try {base = base.getChildrenList().get(i);}
 				catch(IndexOutOfBoundsException e) {return false;}
 			}
 			//TODO Make remove function below
