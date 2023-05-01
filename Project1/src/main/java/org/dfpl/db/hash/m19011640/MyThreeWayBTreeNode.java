@@ -24,9 +24,7 @@ public class MyThreeWayBTreeNode {
 		keyList.sort(new Comparator<Integer>() {
 			@Override
 			public int compare(Integer o1, Integer o2) {
-				if(o1.intValue() > o2.intValue()) return 1;
-				else if(o1.intValue() == o2.intValue()) return 0;
-				else return -1;
+				return o1.intValue() - o2.intValue();
 			}
 		});
 	}
@@ -38,6 +36,15 @@ public class MyThreeWayBTreeNode {
 	public MyThreeWayBTreeNode getParent() {return parent;}
 	
 	//children
-	public void setChildren(MyThreeWayBTreeNode children) {this.children.add(children);}
+	public void setChildren(MyThreeWayBTreeNode children) {
+		this.children.add(children);
+		this.children.sort(new Comparator<MyThreeWayBTreeNode>() {
+			@Override
+			public int compare(MyThreeWayBTreeNode o1, MyThreeWayBTreeNode o2) {
+				return o1.getKeyList().get(0).intValue() - o2.getKeyList().get(0).intValue();
+			}
+		});
+	}
 	public List<MyThreeWayBTreeNode> getChildrenList(){return children;}
+	public Integer getChildrenListSize() {return children.size();}
 }
