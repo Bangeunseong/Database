@@ -17,6 +17,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	MyThreeWayBTree(){root = new MyThreeWayBTreeNode();}
 	
 	//Method
+	//-----------------------------------
 	//Getting first and last key of BTree
 	@Override
 	public Integer first() {
@@ -35,7 +36,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		}
 		return base.getKeyList().get(base.getKeyListSize() - 1);
 	}
-	
+	//------------------------------------
 	//Getting BTreeSize
 	public int getSize(MyThreeWayBTreeNode base) {
 		if(base.getChildrenList().isEmpty()) return base.getKeyListSize();
@@ -51,14 +52,14 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	public int size() {
 		return getSize(root);
 	}
-	
+	//-------------------------------------
 	//Getting true value when BTree is empty
 	@Override
 	public boolean isEmpty() {
 		if(root.getKeyList().isEmpty()) return true;
 		return false;
 	}
-
+	//-------------------------------------
 	//Getting true value when BTree has Object o(which is Key)
 	@Override
 	public boolean contains(Object o) {
@@ -68,12 +69,11 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			while(true) {
 				int i = 0;
 				for(Integer key : base.getKeyList()) {
-					if(ins.intValue() < key)
-						break;
+					if(ins.intValue() < key) i++;
 					else if(ins.intValue() == key) return true;
-					i++;
+					else break;
 				}
-				try {base = base.getChildrenList().get(i);}
+				try {base = base.getChildrenList().get(i - 1);}
 				catch(IndexOutOfBoundsException e) {return false;}
 			}
 		}
@@ -82,12 +82,10 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	
 	@Override
 	public boolean containsAll(Collection<?> c) {
-		for(Object val : c) {
-			if(!contains(c)) return false;
-		}
+		for(Object val : c) {if(!contains(c)) return false;}
 		return true;
 	}
-	
+	//---------------------------------------
 	//Getting Array value from BTree
 	public void getKeyValue(MyThreeWayBTreeNode base, List<Object> tmp){
 		base.getKeyList().stream().forEach(key->{
@@ -108,11 +106,10 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
 		return null;
 	}
-
-	//Add and remove element
+	//-----------------------------------------
+	//Add element
 	@Override
 	public boolean add(Integer e) {
 		if(contains(e)) return false;
@@ -181,23 +178,35 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		}
 		return true;
 	}
-
-	@Override
-	public boolean remove(Object o) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
+	
 	@Override
 	public boolean addAll(Collection<? extends Integer> c) {
 		for(Integer val : c) {if(!add(val)) return false;}
 		return true;
 	}
-
+	//-----------------------------------------
+	//Remove element
 	@Override
-	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean remove(Object o) {
+		if(o instanceof Number) {
+			Number key = (Number)o;
+			MyThreeWayBTreeNode base = root;
+			Outter:while(true) {
+				int i = 0;
+				for(Integer val : base.getKeyList()) {
+					if(val < key.intValue()) i++;
+					else if(val == key.intValue()) break Outter; 
+					else break;
+				}
+				try {base = base.getChildrenList().get(i - 1);}
+				catch(IndexOutOfBoundsException e) {return false;}
+			}
+			//TODO Make remove function below
+			
+			
+			return true;
+		}
+		else return false;
 	}
 
 	@Override
@@ -211,7 +220,14 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		// TODO Auto-generated method stub
 		
 	}
-
+	
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	//-----------------------------------------
+	//Finding value
 	@Override
 	public Integer lower(Integer e) {
 		// TODO Auto-generated method stub
