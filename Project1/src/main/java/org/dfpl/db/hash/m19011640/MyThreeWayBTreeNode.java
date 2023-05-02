@@ -47,4 +47,16 @@ public class MyThreeWayBTreeNode {
 	}
 	public List<MyThreeWayBTreeNode> getChildrenList(){return children;}
 	public Integer getChildrenListSize() {return children.size();}
+	
+	//General Method
+	public boolean isSibling(MyThreeWayBTreeNode node) {
+		if(node.equals(this)) return false;
+		if(node.getParent().equals(parent)) {
+			if(Math.abs(parent.getChildrenList().indexOf(node) - parent.getChildrenList().indexOf(this)) <= 1) {
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
 }

@@ -216,18 +216,32 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 					MyThreeWayBTreeNode parent = base.getParent();
 					MyThreeWayBTreeNode sibling = null;
 					for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
-						if(Math.abs(parent.getChildrenList().indexOf(node) - parent.getChildrenList().indexOf(base)) <= 1) {sibling = node; break;}
+						if(base.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
+							sibling = node; break;
+						}
 					}
-					
 					if(sibling == null) {
-						if(base.getParent().getKeyListSize() > Math.floor(3/2)) {
+						if(parent.getKeyListSize() > Math.floor(3/2)) {
+							Integer removedKey = base.getKeyList().get(0);
+							parent.getChildrenList().remove(base);
+							int i = 0;
+							for(Integer val : parent.getKeyList()) {
+								if(removedKey < val) {
+									parent.getChildrenList().get(i).setKey(val);
+									parent.getKeyList().remove(val);
+									break;
+								}
+								i++;
+							}
+						}
+						else {
 							
 						}
 					}
 					else {
 						int index = base.getKeyList().indexOf(key);
 						base.getKeyList().remove(key);
-						base.setKey(base.getParent().getKeyList().get(index - 1));
+						base.setKey(parent.getKeyList().get(index - 1));
 						sibling.getParent().setKey(sibling.getKeyList().remove(sibling.getKeyListSize() - 1));
 					}
 				}
