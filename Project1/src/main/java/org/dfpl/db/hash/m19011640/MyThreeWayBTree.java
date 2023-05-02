@@ -194,16 +194,24 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			Outter:while(true) {
 				int i = 0;
 				for(Integer val : base.getKeyList()) {
-					if(key.intValue() < val) break;
-					else if(val == key.intValue()) break Outter;
+					if(key.intValue() < val.intValue()) break;
+					else if(val.intValue() == key.intValue()) break Outter;
 					else i++;
 				}
 				try {base = base.getChildrenList().get(i);}
 				catch(IndexOutOfBoundsException e) {return false;}
 			}
+			System.out.println(base.getKeyList());
 			//TODO Make remove function below
-			
-			
+			if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
+			else {
+				int index = 0;
+				for(Integer val : base.getKeyList()) {
+					if(val.intValue() == key.intValue()) break;
+					index++;
+				}
+				System.out.println(index);
+			}
 			return true;
 		}
 		else return false;
