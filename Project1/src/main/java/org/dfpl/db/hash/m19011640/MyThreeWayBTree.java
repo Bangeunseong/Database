@@ -203,14 +203,22 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			}
 			System.out.println(base.getKeyList());
 			//TODO Make remove function below
-			if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
-			else {
+			if(base.getKeyListSize() > Math.floor(3/2)) {
+				if(base.getChildrenList().isEmpty()) base.getKeyList().remove(key);
+				else {
+					//TODO Make remove algorithm when base has children but has more than 1 key
+					
+				}
+			}
+			else{
 				int index = 0;
 				for(Integer val : base.getKeyList()) {
 					if(val.intValue() == key.intValue()) break;
 					index++;
 				}
-				System.out.println(index);
+				//TODO Make remove algorithm when base has less than 1 key
+				
+				
 			}
 			return true;
 		}
