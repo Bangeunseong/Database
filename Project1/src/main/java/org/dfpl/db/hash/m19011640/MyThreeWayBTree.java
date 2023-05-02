@@ -1,5 +1,6 @@
 package org.dfpl.db.hash.m19011640;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -49,9 +50,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	}
 	
 	@Override
-	public int size() {
-		return getSize(root);
-	}
+	public int size() {return getSize(root);}
 	//-------------------------------------
 	//Getting true value when BTree is empty
 	@Override
@@ -87,26 +86,34 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	}
 	//---------------------------------------
 	//Getting Array value from BTree
-	public void getKeyValue(MyThreeWayBTreeNode base, List<Object> tmp){
-		base.getKeyList().stream().forEach(key->{
-			tmp.add(key);
-		});
-		if(base.getChildrenList().isEmpty()) return;
-		base.getChildrenList().stream().forEach(data->{
-			getKeyValue(data, tmp);
-		});
+	public <T> int getKeyValue(MyThreeWayBTreeNode base, T[] tmp, int index) throws ClassCastException{
+		for(Integer val : base.getKeyList()) {
+			try {tmp[index++] = (T)val;}
+			catch (ClassCastException e) {throw new ClassCastException("Unable to cast!");}
+		}
+		int ind = index;
+		if(base.getChildrenList().isEmpty()) return ind;
+		for(MyThreeWayBTreeNode node : base.getChildrenList()) {ind = getKeyValue(node, tmp, ind);}
+		return ind;
 	}
 	
 	@Override
 	public Object[] toArray() {
-		List<Object> tmp = new ArrayList<>();
-		getKeyValue(root, tmp);
-		return tmp.toArray();
+		Object[] tmp = new Object[size()];
+		try {
+			getKeyValue(root, tmp, 0);
+			return tmp;
+		}
+		catch(ClassCastException e) {return null;}
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		return null;
+		try {
+			getKeyValue(root, a, 0);
+			return a;
+		}
+		catch (ClassCastException e) {return null;}
 	}
 	//-----------------------------------------
 	//Add element
@@ -201,9 +208,33 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				try {base = base.getChildrenList().get(i);}
 				catch(IndexOutOfBoundsException e) {return false;}
 			}
+			
 			//TODO Make remove function below
-			
-			
+			if(base.getChildrenList().isEmpty()) {
+				if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
+				else {
+					MyThreeWayBTreeNode parent = base.getParent();
+					MyThreeWayBTreeNode sibling = null;
+					for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
+						if(Math.abs(parent.getChildrenList().indexOf(node) - parent.getChildrenList().indexOf(base)) <= 1) {sibling = node; break;}
+					}
+					
+					if(sibling == null) {
+						if(base.getParent().getKeyListSize() > Math.floor(3/2)) {
+							
+						}
+					}
+					else {
+						int index = base.getKeyList().indexOf(key);
+						base.getKeyList().remove(key);
+						base.setKey(base.getParent().getKeyList().get(index - 1));
+						sibling.getParent().setKey(sibling.getKeyList().remove(sibling.getKeyListSize() - 1));
+					}
+				}
+			}
+			else {
+				
+			}
 			return true;
 		}
 		else return false;
