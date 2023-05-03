@@ -284,13 +284,11 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		while(!isEmpty()) {remove(root.getKeyList().get(0));}
 	}
 	
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 	//-----------------------------------------
@@ -373,9 +371,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		return lastKey;
 	}
 	//-----------------------------------------
-	//TODO Make iterator, set functions
-	//Returns iterator or subset
-	
+	//Returns iterator
 	//Internal class of iterator
 	public class ItrAscending<E> implements Iterator<E>{
 		E[] tmp = toArray((E[])Array.newInstance(getClass(), size()));
@@ -415,18 +411,19 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	public Iterator<Integer> iterator() {
 		return new ItrAscending<Integer>();
 	}
-
+	
+	@Override
+	public Iterator<Integer> descendingIterator() {
+		return new ItrDescending<Integer>();
+	}
+	//-----------------------------------------
+	//Returns sets
 	@Override
 	public NavigableSet<Integer> descendingSet() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public Iterator<Integer> descendingIterator() {
-		return new ItrDescending<Integer>();
-	}
-
+	
 	@Override
 	public NavigableSet<Integer> subSet(Integer fromElement, boolean fromInclusive, Integer toElement,
 			boolean toInclusive) {
