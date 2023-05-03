@@ -90,6 +90,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		for(Integer val : base.getKeyList()) {
 			try {tmp[index++] = (T)val;}
 			catch (ClassCastException e) {throw new ClassCastException("Unable to cast!");}
+			catch (IndexOutOfBoundsException e) {return index;}
 		}
 		int ind = index;
 		if(base.getChildrenList().isEmpty()) return ind;
@@ -195,7 +196,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Remove element
 	@Override
 	public boolean remove(Object o) {
-		if(o instanceof Number) {
+		if(contains(o)) {
 			Number key = (Number)o;
 			MyThreeWayBTreeNode base = root;
 			Outter:while(true) {
@@ -235,7 +236,9 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 							}
 						}
 						else {
-							
+							parent.getChildrenList().remove(base);
+							parent.setKey(parent.getChildrenList().get(0).getKeyList().get(0));
+							parent.getChildrenList().remove(parent.getChildrenList().get(0));
 						}
 					}
 					else {
@@ -247,6 +250,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				}
 			}
 			else {
+				//TODO Make remove function when node is internal
 				
 			}
 			return true;
@@ -256,8 +260,8 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		for(Object val : c) {if(!remove(val)) return false;}
+		return true;
 	}
 
 	@Override
@@ -275,44 +279,104 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Finding value
 	@Override
 	public Integer lower(Integer e) {
-		// TODO Auto-generated method stub
-		return null;
+		MyThreeWayBTreeNode base = root;
+		Integer result = null;
+		while(true) {
+			int i = 0;
+			for(Integer val : base.getKeyList()) {
+				if(val < e) {result = val; i++;}
+				else break;
+			}
+			try {base = base.getChildrenList().get(i);}
+			catch(IndexOutOfBoundsException exp) {return result;}
+		}
 	}
-
+	
+	@Override
+	public Integer higher(Integer e) {
+		MyThreeWayBTreeNode base = root;
+		Integer result = null;
+		while(true) {
+			int i = 0;
+			for(Integer val : base.getKeyList()) {
+				if(val > e) {result = val; i++;}
+				else break;
+			}
+			try {base = base.getChildrenList().get(i);}
+			catch(IndexOutOfBoundsException exp) {return result;}
+		}
+	}
+	
 	@Override
 	public Integer floor(Integer e) {
-		// TODO Auto-generated method stub
-		return null;
+		MyThreeWayBTreeNode base = root;
+		Integer result = null;
+		while(true) {
+			int i = 0;
+			for(Integer val : base.getKeyList()) {
+				if(val < e) {result = val; i++;}
+				else if(val.equals(e)) return val;
+				else break;
+			}
+			try {base = base.getChildrenList().get(i);}
+			catch(IndexOutOfBoundsException exp) {return result;}
+		}
 	}
 
 	@Override
 	public Integer ceiling(Integer e) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Integer higher(Integer e) {
-		// TODO Auto-generated method stub
-		return null;
+		MyThreeWayBTreeNode base = root;
+		Integer result = null;
+		while(true) {
+			int i = 0;
+			for(Integer val : base.getKeyList()) {
+				if(val > e) {result = val; i++;}
+				else if(val.equals(e)) return val;
+				else break;
+			}
+			try {base = base.getChildrenList().get(i);}
+			catch(IndexOutOfBoundsException exp) {return result;}
+		}
 	}
 
 	@Override
 	public Integer pollFirst() {
-		// TODO Auto-generated method stub
-		return null;
+		if(isEmpty()) return null;
+		Integer firstKey = first();
+		remove(firstKey);
+		return firstKey;
 	}
 
 	@Override
 	public Integer pollLast() {
-		// TODO Auto-generated method stub
-		return null;
+		if(isEmpty()) return null;
+		Integer lastKey = last();
+		remove(lastKey);
+		return lastKey;
 	}
+	//-----------------------------------------
+	//TODO Make iterator, set functions
+	//Returns iterator or subset
+	//Internal class of iterator
+	public class Itr<E> implements Iterator<E>{
+		
+		@Override
+		public boolean hasNext() {
+			if(isEmpty()) return false;
+			return true;
+		}
 
+		@Override
+		public E next() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	
 	@Override
 	public Iterator<Integer> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Itr<Integer>();
 	}
 
 	@Override
@@ -363,11 +427,12 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	//-----------------------------------------
+	//Comparator
 	@Override
 	public Comparator<? super Integer> comparator() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	//-----------------------------------------
 }
