@@ -549,7 +549,6 @@ public final class Calculator extends JFrame {
 		for(int i = 1; i < 11; i++) {jbutton_Operands_L.add(new JButton(String.valueOf(i % 10)));}
 		jbutton_Operands_L.add(new JButton("T")); jbutton_Operands_L.add(new JButton("F"));
 		jbutton_Operands_L.stream().forEach(data->{
-			//TODO add actionlistener for operands of bitlogic calculator
 			data.addActionListener(new SelectAction_BitlogicListener());
 			data.setBackground(Color.ORANGE);
 			data.setFont(new Font("Dialog", 1, 12));
@@ -563,7 +562,6 @@ public final class Calculator extends JFrame {
 			jbutton_Operators_L.add(new JButton(data));
 		});
 		jbutton_Operators_L.stream().forEach(data->{
-			//TODO add actionlistener for operators of bitlogic calculator
 			data.addActionListener(new SelectAction_BitlogicListener());
 			data.setBackground(Color.ORANGE);
 			data.setFont(new Font("Dialog", 1, 12));

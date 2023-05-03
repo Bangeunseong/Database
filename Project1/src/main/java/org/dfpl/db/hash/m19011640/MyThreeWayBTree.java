@@ -87,14 +87,33 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//---------------------------------------
 	//Getting Array value from BTree
 	public <T> int getKeyValue(MyThreeWayBTreeNode base, T[] tmp, int index) throws ClassCastException{
-		for(Integer val : base.getKeyList()) {
-			try {tmp[index++] = (T)val;}
-			catch (ClassCastException e) {throw new ClassCastException("Unable to cast!");}
-			catch (IndexOutOfBoundsException e) {return index;}
+		//If base is leaf, get all keys
+		if(base.getChildrenList().isEmpty()) {
+			int ind = index;
+			for(Integer val : base.getKeyList()) {
+				try {tmp[ind++] = (T)val;}
+				catch (ClassCastException e) {throw new ClassCastException("Unable to cast!");}
+				catch (IndexOutOfBoundsException e) {return ind;}
+			}
+			return ind;
 		}
-		int ind = index;
-		if(base.getChildrenList().isEmpty()) return ind;
-		for(MyThreeWayBTreeNode node : base.getChildrenList()) {ind = getKeyValue(node, tmp, ind);}
+		
+		//Goes to first children
+		int ind = getKeyValue(base.getChildrenList().get(0), tmp, index);
+		
+		//Get firstKey of base keyList
+		tmp[ind++] = (T)base.getKeyList().get(0);
+		
+		//Goes to second children
+		ind = getKeyValue(base.getChildrenList().get(1), tmp, ind);
+		
+		//Get secondKey if it exists and Goes to third children
+		try {
+			tmp[ind++] = (T)base.getKeyList().get(1);
+			ind = getKeyValue(base.getChildrenList().get(2), tmp, ind);
+		}
+		catch(IndexOutOfBoundsException e) {return ind - 1;}
+		
 		return ind;
 	}
 	
@@ -210,7 +229,6 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				catch(IndexOutOfBoundsException e) {return false;}
 			}
 			
-			//TODO Make remove function below
 			if(base.getChildrenList().isEmpty()) {
 				if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
 				else {
@@ -357,26 +375,45 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//-----------------------------------------
 	//TODO Make iterator, set functions
 	//Returns iterator or subset
+	
 	//Internal class of iterator
-	public class Itr<E> implements Iterator<E>{
+	public class ItrAscending<E> implements Iterator<E>{
+		E[] tmp = toArray((E[])Array.newInstance(getClass(), size()));
+		int index = 0;
 		
 		@Override
 		public boolean hasNext() {
-			if(isEmpty()) return false;
+			if(index >= size()) return false;
 			return true;
 		}
 
 		@Override
 		public E next() {
-			// TODO Auto-generated method stub
-			return null;
+			return tmp[index++];
+		}
+		
+	}
+	
+	public class ItrDescending<E> implements Iterator<E>{
+		E[] tmp = toArray((E[])Array.newInstance(getClass(), size()));
+		int index = size();
+		
+		@Override
+		public boolean hasNext() {
+			if(index <= 0) return false;
+			return true;
+		}
+
+		@Override
+		public E next() {
+			return tmp[--index];
 		}
 		
 	}
 	
 	@Override
 	public Iterator<Integer> iterator() {
-		return new Itr<Integer>();
+		return new ItrAscending<Integer>();
 	}
 
 	@Override
@@ -387,8 +424,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 
 	@Override
 	public Iterator<Integer> descendingIterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItrDescending<Integer>();
 	}
 
 	@Override
