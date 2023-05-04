@@ -215,24 +215,28 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Remove element
 	@Override
 	public boolean remove(Object o) {
-		if(contains(o)) {
-			Number key = (Number)o;
-			MyThreeWayBTreeNode base = root;
-			Outter:while(true) {
-				int i = 0;
-				for(Integer val : base.getKeyList()) {
-					if(key.intValue() < val) break;
-					else if(val == key.intValue()) break Outter;
-					else i++;
-				}
-				try {base = base.getChildrenList().get(i);}
-				catch(IndexOutOfBoundsException e) {return false;}
+		if(!contains(o)) return false;
+		
+		MyThreeWayBTreeNode base = root;
+		Number key = (Number)o;
+		
+		Outter:while(true) {
+			int i = 0;
+			for(Integer val : base.getKeyList()) {
+				if(key.intValue() < val) break;
+				else if(val == key.intValue()) break Outter;
+				else i++;
 			}
+			try {base = base.getChildrenList().get(i);}
+			catch(IndexOutOfBoundsException e) {return false;}
+		}
+		
+		do {
+			MyThreeWayBTreeNode parent = base.getParent();
 			
 			if(base.getChildrenList().isEmpty()) {
 				if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
 				else {
-					MyThreeWayBTreeNode parent = base.getParent();
 					MyThreeWayBTreeNode sibling = null;
 					for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
 						if(base.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
@@ -279,9 +283,10 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				//TODO Make remove function when node is internal
 				
 			}
-			return true;
-		}
-		else return false;
+			base = parent;
+		}while(base.getKeyListSize() <= Math.floor(3/2) && base != null);
+		
+		return true;
 	}
 
 	@Override
