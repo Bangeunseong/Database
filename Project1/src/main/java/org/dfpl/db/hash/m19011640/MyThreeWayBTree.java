@@ -281,7 +281,41 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			}
 			else {
 				//TODO Make remove function when node is internal
+				MyThreeWayBTreeNode lessBase = base;
+				MyThreeWayBTreeNode bigBase = base;
+				while(true) {
+					int i = 0;
+					for(Integer val : lessBase.getKeyList()) {
+						if(val >= key.intValue()) break;
+						i++;
+					}
+					try {lessBase = lessBase.getChildrenList().get(i);}
+					catch (IndexOutOfBoundsException e) {break;}
+				}
+				while(true) {
+					int i = 0;
+					for(Integer val : lessBase.getKeyList()) {
+						if(val <= key.intValue()) break;
+						i++;
+					}
+					try {bigBase = bigBase.getChildrenList().get(i);}
+					catch (IndexOutOfBoundsException e) {break;}
+				}
 				
+				if(lessBase.getKeyListSize() > Math.floor(3/2)) {
+					
+				}
+				else if(bigBase.getKeyListSize() > Math.floor(3/2)) {
+					
+				}
+				else {
+					if(base.getKeyListSize() > Math.floor(3/2)) {
+						
+					}
+					else {
+						
+					}
+				}
 			}
 			base = parent;
 		}while(base.getKeyListSize() <= Math.floor(3/2) && base != null);
