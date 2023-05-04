@@ -399,9 +399,8 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		public E next() {
 			return tmp[index++];
 		}
-		
 	}
-	
+	//Internal class of descendingiterator
 	public class ItrDescending<E> implements Iterator<E>{
 		private E[] tmp = null;
 		private int index = size();
@@ -420,7 +419,6 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		public E next() {
 			return tmp[--index];
 		}
-		
 	}
 	
 	@Override
