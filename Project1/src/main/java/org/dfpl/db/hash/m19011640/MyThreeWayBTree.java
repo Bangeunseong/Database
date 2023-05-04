@@ -374,8 +374,12 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Returns iterator
 	//Internal class of iterator
 	public class ItrAscending<E> implements Iterator<E>{
-		E[] tmp = toArray((E[])Array.newInstance(getClass(), size()));
-		int index = 0;
+		private E[] tmp = null;
+		private int index = 0;
+		
+		public ItrAscending(Class<E> klass){
+			tmp = toArray((E[])Array.newInstance(klass, size()));
+		}
 		
 		@Override
 		public boolean hasNext() {
@@ -391,8 +395,12 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	}
 	
 	public class ItrDescending<E> implements Iterator<E>{
-		E[] tmp = toArray((E[])Array.newInstance(getClass(), size()));
-		int index = size();
+		private E[] tmp = null;
+		private int index = size();
+		
+		public ItrDescending(Class<E> klass){
+			tmp = toArray((E[])Array.newInstance(klass, size()));
+		}
 		
 		@Override
 		public boolean hasNext() {
@@ -409,12 +417,12 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	
 	@Override
 	public Iterator<Integer> iterator() {
-		return new ItrAscending<Integer>();
+		return new ItrAscending<Integer>(Integer.class);
 	}
 	
 	@Override
 	public Iterator<Integer> descendingIterator() {
-		return new ItrDescending<Integer>();
+		return new ItrDescending<Integer>(Integer.class);
 	}
 	//-----------------------------------------
 	//Returns sets
