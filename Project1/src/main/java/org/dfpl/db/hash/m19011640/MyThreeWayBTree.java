@@ -12,7 +12,7 @@ import java.util.SortedSet;
 @SuppressWarnings("unused")
 public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Field
-	private MyThreeWayBTreeNode root;
+	public MyThreeWayBTreeNode root;
 	
 	//Constructor
 	MyThreeWayBTree(){root = new MyThreeWayBTreeNode();}
@@ -262,8 +262,16 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 					else {
 						int index = base.getKeyList().indexOf(key);
 						base.getKeyList().remove(key);
-						base.setKey(parent.getKeyList().get(index - 1));
-						sibling.getParent().setKey(sibling.getKeyList().remove(sibling.getKeyListSize() - 1));
+						if(index > 0) {
+							base.setKey(parent.getKeyList().get(index - 1));
+							parent.getKeyList().remove(index - 1);
+							parent.setKey(sibling.getKeyList().remove(sibling.getKeyListSize() - 1));
+						}
+						else {
+							base.setKey(parent.getKeyList().get(index));
+							parent.getKeyList().remove(0);
+							parent.setKey(sibling.getKeyList().remove(0));
+						}
 					}
 				}
 			}
