@@ -13,7 +13,7 @@ import java.util.SortedSet;
 @SuppressWarnings("unused")
 public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Field
-	public MyThreeWayBTreeNode root;
+	private MyThreeWayBTreeNode root;
 	
 	//Constructor
 	MyThreeWayBTree(){root = new MyThreeWayBTreeNode();}
@@ -383,7 +383,6 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				}
 			}
 		}
-		
 		return true;
 	}
 
