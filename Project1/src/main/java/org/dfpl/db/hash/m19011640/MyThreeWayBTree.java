@@ -2,6 +2,7 @@ package org.dfpl.db.hash.m19011640;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -231,143 +232,157 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			catch(IndexOutOfBoundsException e) {return false;}
 		}
 		
-		do {
-			MyThreeWayBTreeNode parent = base.getParent();
-			
-			if(base.getChildrenList().isEmpty()) {
-				if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
+		if(base.getChildrenList().isEmpty()) {
+			if(base.getKeyListSize() > Math.floor(3/2)) base.getKeyList().remove(key);
+			else {
+				MyThreeWayBTreeNode parent = base.getParent();
+				MyThreeWayBTreeNode sibling = null;
+				for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
+					if(base.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
+						sibling = node; break;
+					}
+				}
+				if(sibling == null) {
+					if(parent.getKeyListSize() > Math.floor(3/2)) {
+						Integer removedKey = base.getKeyList().get(0);
+						parent.getChildrenList().remove(base);
+						int i = 0;
+						for(Integer val : parent.getKeyList()) {
+							if(removedKey < val) {
+								parent.getChildrenList().get(i).setKey(val);
+								parent.getKeyList().remove(val);
+								break;
+							}
+							i++;
+						}
+					}
+					else {
+						parent.getChildrenList().remove(base);
+						parent.setKey(parent.getChildrenList().get(0).getKeyList().get(0));
+						parent.getChildrenList().remove(parent.getChildrenList().get(0));
+					}
+				}
 				else {
+					int index = base.getKeyList().indexOf(key);
+					base.getKeyList().remove(key);
+					if(index > 0) {
+						base.setKey(parent.getKeyList().get(index - 1));
+						parent.getKeyList().remove(index - 1);
+						parent.setKey(sibling.getKeyList().remove(sibling.getKeyListSize() - 1));
+					}
+					else {
+						base.setKey(parent.getKeyList().get(index));
+						parent.getKeyList().remove(0);
+						parent.setKey(sibling.getKeyList().remove(0));
+					}
+				}
+			}
+		}
+		else {
+			//TODO Make remove function when node is internal
+			MyThreeWayBTreeNode lessBase = base;
+			MyThreeWayBTreeNode bigBase = base;
+			while(true) {
+				int i = 0;
+				for(Integer val : lessBase.getKeyList()) {
+					if(val >= key.intValue()) break;
+					i++;
+				}
+				try {lessBase = lessBase.getChildrenList().get(i);}
+				catch (IndexOutOfBoundsException e) {break;}
+			}
+			while(true) {
+				int i = 0;
+				for(Integer val : bigBase.getKeyList()) {
+					if(val > key.intValue()) break;
+					i++;
+				}
+				try {bigBase = bigBase.getChildrenList().get(i);}
+				catch (IndexOutOfBoundsException e) {break;}
+			}
+			
+			if(lessBase.getKeyListSize() > Math.floor(3/2)) {
+				base.getKeyList().remove(key);
+				base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
+				lessBase.getKeyList().remove(lessBase.getKeyListSize() - 1);
+			}
+			else if(bigBase.getKeyListSize() > Math.floor(3/2)) {
+				base.getKeyList().remove(key);
+				base.setKey(bigBase.getKeyList().get(0));
+				bigBase.getKeyList().remove(0);
+			}
+			else {
+				base.getKeyList().remove(key);
+				
+				if(lessBase.getParent().equals(base) && bigBase.getParent().equals(base)) {
+					base.setKey(lessBase.getKeyList().get(0));
+					base.setKey(bigBase.getKeyList().get(0));
+					base.getChildrenList().removeAll(Arrays.asList(lessBase, bigBase));
+				}
+				else if(lessBase.getParent().equals(base)) {
+					base.setKey(bigBase.getKeyList().get(0));
+					
 					MyThreeWayBTreeNode sibling = null;
-					for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
-						if(base.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
+					for(MyThreeWayBTreeNode node : bigBase.getParent().getChildrenList()) {
+						if(bigBase.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
 							sibling = node; break;
 						}
 					}
-					if(sibling == null) {
-						if(parent.getKeyListSize() > Math.floor(3/2)) {
-							Integer removedKey = base.getKeyList().get(0);
-							parent.getChildrenList().remove(base);
-							int i = 0;
-							for(Integer val : parent.getKeyList()) {
-								if(removedKey < val) {
-									parent.getChildrenList().get(i).setKey(val);
-									parent.getKeyList().remove(val);
-									break;
-								}
-								i++;
-							}
-						}
-						else {
-							parent.getChildrenList().remove(base);
-							parent.setKey(parent.getChildrenList().get(0).getKeyList().get(0));
-							parent.getChildrenList().remove(parent.getChildrenList().get(0));
-						}
+					
+					MyThreeWayBTreeNode parentBigBase = bigBase.getParent();
+					
+					if(sibling != null) {
+						bigBase.getKeyList().remove(key);
+						bigBase.setKey(parentBigBase.getKeyList().get(0));
+						parentBigBase.getKeyList().remove(0);
+						parentBigBase.setKey(sibling.getKeyList().get(0));
+						sibling.getKeyList().remove(0);
 					}
 					else {
-						int index = base.getKeyList().indexOf(key);
-						base.getKeyList().remove(key);
-						if(index > 0) {
-							base.setKey(parent.getKeyList().get(index - 1));
-							parent.getKeyList().remove(index - 1);
-							parent.setKey(sibling.getKeyList().remove(sibling.getKeyListSize() - 1));
+						parentBigBase.getChildrenList().remove(bigBase);
+						if(parentBigBase.getKeyListSize() > Math.floor(3/2)) {
+							parentBigBase.getChildrenList().get(0).setKey(parentBigBase.getKeyList().get(0));
+							parentBigBase.getKeyList().remove(0);
 						}
 						else {
-							base.setKey(parent.getKeyList().get(index));
-							parent.getKeyList().remove(0);
-							parent.setKey(sibling.getKeyList().remove(0));
+							parentBigBase.setKey(parentBigBase.getChildrenList().get(0).getKeyList().get(0));
+							parentBigBase.getChildrenList().remove(0);
 						}
 					}
-				}
-			}
-			else {
-				//TODO Make remove function when node is internal
-				MyThreeWayBTreeNode lessBase = base;
-				MyThreeWayBTreeNode bigBase = base;
-				while(true) {
-					int i = 0;
-					for(Integer val : lessBase.getKeyList()) {
-						if(val >= key.intValue()) break;
-						i++;
-					}
-					try {lessBase = lessBase.getChildrenList().get(i);}
-					catch (IndexOutOfBoundsException e) {break;}
-				}
-				while(true) {
-					int i = 0;
-					for(Integer val : bigBase.getKeyList()) {
-						if(val <= key.intValue()) break;
-						i++;
-					}
-					try {bigBase = bigBase.getChildrenList().get(i);}
-					catch (IndexOutOfBoundsException e) {break;}
-				}
-				
-				if(lessBase.getKeyListSize() > Math.floor(3/2)) {
-					base.getKeyList().remove(key);
-					base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
-					lessBase.getKeyList().remove(lessBase.getKeyListSize() - 1);
-				}
-				else if(bigBase.getKeyListSize() > Math.floor(3/2)) {
-					base.getKeyList().remove(key);
-					base.setKey(bigBase.getKeyList().get(0));
-					bigBase.getKeyList().remove(0);
 				}
 				else {
-					base.getKeyList().remove(key);
+					base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
 					
-					if(lessBase.getParent().equals(base) && bigBase.getParent().equals(base)) {
-						
+					MyThreeWayBTreeNode sibling = null;
+					for(MyThreeWayBTreeNode node : lessBase.getParent().getChildrenList()) {
+						if(lessBase.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
+							sibling = node; break;
+						}
 					}
-					else if(lessBase.getParent().equals(base)) {
-						base.setKey(bigBase.getKeyList().get(0));
-						bigBase.getKeyList().remove(0);
-						
-						MyThreeWayBTreeNode sibling = null;
-						for(MyThreeWayBTreeNode node : bigBase.getParent().getChildrenList()) {
-							if(bigBase.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
-								sibling = node; break;
-							}
-						}
-						
-						if(sibling != null) {
-							
-						}
+					
+					MyThreeWayBTreeNode parentLessBase = lessBase.getParent();
+					
+					if(sibling != null) {
+						lessBase.getKeyList().remove(key);
+						lessBase.setKey(parentLessBase.getKeyList().get(parentLessBase.getKeyListSize() - 1));
+						parentLessBase.getKeyList().remove(parentLessBase.getKeyListSize() - 1);
+						parentLessBase.setKey(sibling.getKeyList().get(sibling.getKeyListSize() - 1));
+						sibling.getKeyList().remove(sibling.getKeyListSize() - 1);
 					}
 					else {
-						base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
-						lessBase.getKeyList().remove(0);
-						
-						MyThreeWayBTreeNode sibling = null;
-						for(MyThreeWayBTreeNode node : lessBase.getParent().getChildrenList()) {
-							if(lessBase.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
-								sibling = node; break;
-							}
-						}
-						
-						MyThreeWayBTreeNode parentLessBase = lessBase.getParent();
-						
-						if(sibling != null) {
-							lessBase.setKey(parentLessBase.getKeyList().get(parentLessBase.getKeyListSize() - 1));
+						parentLessBase.getChildrenList().remove(lessBase);
+						if(parentLessBase.getKeyListSize() > Math.floor(3/2)) {
+							parentLessBase.getChildrenList().get(parentLessBase.getChildrenListSize() - 1).setKey(parentLessBase.getKeyList().get(parentLessBase.getKeyList().get(parentLessBase.getKeyListSize() - 1)));
 							parentLessBase.getKeyList().remove(parentLessBase.getKeyListSize() - 1);
-							parentLessBase.setKey(sibling.getKeyList().get(sibling.getKeyListSize() - 1));
-							sibling.getKeyList().remove(sibling.getKeyListSize() - 1);
 						}
 						else {
-							parentLessBase.getChildrenList().remove(lessBase);
-							if(parentLessBase.getKeyListSize() > Math.floor(3/2)) {
-								parentLessBase.getChildrenList().get(parentLessBase.getChildrenListSize() - 1).setKey(parentLessBase.getKeyList().get(parentLessBase.getKeyList().get(parentLessBase.getKeyListSize() - 1)));
-								parentLessBase.getKeyList().remove(parentLessBase.getKeyListSize() - 1);
-							}
-							else {
-								
-							}
+							parentLessBase.setKey(parentLessBase.getChildrenList().get(0).getKeyList().get(0));
+							parentLessBase.getChildrenList().remove(0);
 						}
-
 					}
 				}
 			}
-			base = parent;
-		}while(base.getKeyListSize() <= Math.floor(3/2) && base != null);
+		}
 		
 		return true;
 	}
