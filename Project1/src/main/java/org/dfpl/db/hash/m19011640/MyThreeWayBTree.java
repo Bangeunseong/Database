@@ -294,7 +294,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				}
 				while(true) {
 					int i = 0;
-					for(Integer val : lessBase.getKeyList()) {
+					for(Integer val : bigBase.getKeyList()) {
 						if(val <= key.intValue()) break;
 						i++;
 					}
