@@ -303,17 +303,66 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				}
 				
 				if(lessBase.getKeyListSize() > Math.floor(3/2)) {
-					
+					base.getKeyList().remove(key);
+					base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
+					lessBase.getKeyList().remove(lessBase.getKeyListSize() - 1);
 				}
 				else if(bigBase.getKeyListSize() > Math.floor(3/2)) {
-					
+					base.getKeyList().remove(key);
+					base.setKey(bigBase.getKeyList().get(0));
+					bigBase.getKeyList().remove(0);
 				}
 				else {
-					if(base.getKeyListSize() > Math.floor(3/2)) {
+					base.getKeyList().remove(key);
+					
+					if(lessBase.getParent().equals(base) && bigBase.getParent().equals(base)) {
 						
 					}
-					else {
+					else if(lessBase.getParent().equals(base)) {
+						base.setKey(bigBase.getKeyList().get(0));
+						bigBase.getKeyList().remove(0);
 						
+						MyThreeWayBTreeNode sibling = null;
+						for(MyThreeWayBTreeNode node : bigBase.getParent().getChildrenList()) {
+							if(bigBase.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
+								sibling = node; break;
+							}
+						}
+						
+						if(sibling != null) {
+							
+						}
+					}
+					else {
+						base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
+						lessBase.getKeyList().remove(0);
+						
+						MyThreeWayBTreeNode sibling = null;
+						for(MyThreeWayBTreeNode node : lessBase.getParent().getChildrenList()) {
+							if(lessBase.isSibling(node) && node.getKeyListSize() > Math.floor(3/2)) {
+								sibling = node; break;
+							}
+						}
+						
+						MyThreeWayBTreeNode parentLessBase = lessBase.getParent();
+						
+						if(sibling != null) {
+							lessBase.setKey(parentLessBase.getKeyList().get(parentLessBase.getKeyListSize() - 1));
+							parentLessBase.getKeyList().remove(parentLessBase.getKeyListSize() - 1);
+							parentLessBase.setKey(sibling.getKeyList().get(sibling.getKeyListSize() - 1));
+							sibling.getKeyList().remove(sibling.getKeyListSize() - 1);
+						}
+						else {
+							parentLessBase.getChildrenList().remove(lessBase);
+							if(parentLessBase.getKeyListSize() > Math.floor(3/2)) {
+								parentLessBase.getChildrenList().get(parentLessBase.getChildrenListSize() - 1).setKey(parentLessBase.getKeyList().get(parentLessBase.getKeyList().get(parentLessBase.getKeyListSize() - 1)));
+								parentLessBase.getKeyList().remove(parentLessBase.getKeyListSize() - 1);
+							}
+							else {
+								
+							}
+						}
+
 					}
 				}
 			}
