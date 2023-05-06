@@ -12,6 +12,9 @@ public class MyHashSet implements Set<Integer> {
 	//Constructor
 	public MyHashSet(){
 		hashTable = new MyThreeWayBTree[3];
+		for(int i = 0; i < hashTable.length; i++) {
+			hashTable[i] = new MyThreeWayBTree();
+		}
 	}
 
 	//Method
@@ -28,8 +31,8 @@ public class MyHashSet implements Set<Integer> {
 
 	@Override
 	public boolean isEmpty() {
-		if(size() == 0) return false;
-		return true;
+		if(size() == 0) return true;
+		return false;
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class MyHashSet implements Set<Integer> {
 	//Internal class for iterator
 	private class ItrHashSet<E> implements Iterator<E>{
 		//Field
-		Iterator<E>[] bTreeItr = (Iterator<E>[])Array.newInstance(Iterator.class, hashTable.length);
+		Iterator<E>[] bTreeItr = new Iterator[hashTable.length];
 		int index = 0;
 		
 		//Constructor
@@ -66,16 +69,24 @@ public class MyHashSet implements Set<Integer> {
 		//Method
 		@Override
 		public boolean hasNext() {
-			if(index > 3) return false;
-			
+			if(index > 2) return false;
 			if(bTreeItr[index].hasNext()) return true;
-			else if(bTreeItr[++index].hasNext()) return true;
+			else {
+				if(index + 1 < 3) {
+					if(bTreeItr[++index].hasNext()) return true;
+				}
+			}
 			return false;
 		}
 
 		@Override
 		public E next() {
 			return bTreeItr[index].next();
+		}
+		
+		@Override
+		public void remove() {
+			bTreeItr[index].remove();
 		}
 	}
 	
