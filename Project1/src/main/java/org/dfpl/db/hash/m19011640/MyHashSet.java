@@ -1,5 +1,6 @@
 package org.dfpl.db.hash.m19011640;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
@@ -14,6 +15,8 @@ public class MyHashSet implements Set<Integer> {
 	}
 
 	//Method
+	//-------------------------------------
+	//Getting size and consistent of key
 	@Override
 	public int size() {
 		int size = 0;
@@ -31,52 +34,114 @@ public class MyHashSet implements Set<Integer> {
 
 	@Override
 	public boolean contains(Object o) {
-		// TODO Auto-generated method stub
+		if(o instanceof Number) {
+			Number key = (Number)o;
+			return hashTable[key.intValue()%3].contains(key);
+		}
 		return false;
 	}
+	
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		for(Object val : c) {
+			if(!contains(val)) return false;
+		}
+		return true;
+	}
+	//-------------------------------------
+	//Returns Iterator and convertion to array
+	//Internal class for iterator
+	private class ItrHashSet<E> implements Iterator<E>{
+		//Field
+		Iterator<E>[] bTreeItr = (Iterator<E>[])Array.newInstance(Iterator.class, hashTable.length);
+		int index = 0;
+		
+		//Constructor
+		public ItrHashSet(){
+			for(int i = 0; i < hashTable.length; i++) {
+				bTreeItr[i] = (Iterator<E>)hashTable[i].iterator();
+			}
+		}
+		
+		//Method
+		@Override
+		public boolean hasNext() {
+			if(index > 3) return false;
+			
+			if(bTreeItr[index].hasNext()) return true;
+			else if(bTreeItr[++index].hasNext()) return true;
+			return false;
+		}
 
+		@Override
+		public E next() {
+			return bTreeItr[index].next();
+		}
+	}
+	
 	@Override
 	public Iterator<Integer> iterator() {
-		// TODO Auto-generated method stub
-		return null;
+		return new ItrHashSet<Integer>();
 	}
 
 	@Override
 	public Object[] toArray() {
-		// TODO Auto-generated method stub
-		return null;
+		int size = 0;
+		for(int i = 0; i < hashTable.length; i++) size += hashTable[i].size();
+		
+		Object[] tmp = new Object[size];
+		for(int i = 0; i < hashTable.length; i++) {
+			Object[] tmpBTree = hashTable[i].toArray();
+			for(int j = 0; j < tmpBTree.length; i++) {
+				tmp[tmp.length] = tmpBTree[j];
+			}
+		}
+		return tmp;
 	}
 
 	@Override
 	public <T> T[] toArray(T[] a) {
-		// TODO Auto-generated method stub
-		return null;
+		int size = 0;
+		for(int i = 0; i < hashTable.length; i++) size += hashTable[i].size();
+		
+		for(int i = 0; i < hashTable.length; i++) {
+			Object[] tmpBTree = hashTable[i].toArray();
+			for(int j = 0; j < tmpBTree.length; i++) {
+				a[a.length] = (T)tmpBTree[j];
+			}
+		}
+		return a;
 	}
-
+	//-------------------------------------
+	//Addition and removal
 	@Override
 	public boolean add(Integer e) {
-		// TODO Auto-generated method stub
-		return false;
+		return hashTable[e%3].add(e);
 	}
 
 	@Override
 	public boolean remove(Object o) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean containsAll(Collection<?> c) {
-		// TODO Auto-generated method stub
+		if(o instanceof Number) {
+			Number key = (Number)o;
+			return hashTable[key.intValue()%3].remove(key);
+		}
 		return false;
 	}
 
 	@Override
 	public boolean addAll(Collection<? extends Integer> c) {
-		// TODO Auto-generated method stub
-		return false;
+		int cnt = 0;
+		for(Integer val : c) {if(add(val)) cnt++;}
+		return cnt > 0 ? true : false;
 	}
-
+	
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		int cnt = 0;
+		for(Object val : c) {if(remove(val)) cnt++;}
+		return cnt > 0 ? true : false;
+	}
+	
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		// TODO Auto-generated method stub
@@ -84,15 +149,9 @@ public class MyHashSet implements Set<Integer> {
 	}
 
 	@Override
-	public boolean removeAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public void clear() {
-		// TODO Auto-generated method stub
-		
+		for(int i = 0; i < hashTable.length; i++)
+			hashTable[i].clear();
 	}
-
+	//-------------------------------------
 }

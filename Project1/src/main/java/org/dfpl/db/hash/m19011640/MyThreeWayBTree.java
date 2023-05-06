@@ -209,8 +209,9 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	
 	@Override
 	public boolean addAll(Collection<? extends Integer> c) {
-		for(Integer val : c) {if(!add(val)) return false;}
-		return true;
+		int cnt = 0;
+		for(Integer val : c) {if(add(val)) cnt++;}
+		return cnt > 0 ? true : false;
 	}
 	//-----------------------------------------
 	//Remove element
@@ -388,17 +389,22 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 
 	@Override
 	public boolean removeAll(Collection<?> c) {
-		for(Object val : c) {if(!remove(val)) return false;}
-		return true;
+		int cnt = 0;
+		for(Object val : c) {if(remove(val)) cnt++;}
+		return cnt > 0 ? true : false; 
 	}
 
 	@Override
 	public void clear() {
-		while(!isEmpty()) {remove(root.getKeyList().get(0));}
+		List<Object> tmp = Arrays.asList(toArray());
+		removeAll(tmp);
 	}
 	
 	@Override
 	public boolean retainAll(Collection<?> c) {
+		List<Object> tmp = Arrays.asList(toArray());
+		tmp.removeAll(c);
+		if(removeAll(tmp)) return true;
 		return false;
 	}
 	//-----------------------------------------
