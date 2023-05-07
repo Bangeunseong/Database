@@ -150,6 +150,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	public boolean add(Integer e) {
 		if(contains(e)) return false;
 		
+		//Find the base node to add e
 		MyThreeWayBTreeNode base = root;
 		while(true) {
 			int i = 0;
@@ -161,22 +162,31 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			else base = base.getChildrenList().get(i);
 		}
 		
+		//Add e to base keylist
 		base.setKey(e);
 		
+		//Refactoring when base keysize exceeds floor(3/2)
 		if(base.getKeyListSize() > 2) {
+			//Refactoring base manipulates parent
+			//Use loop from base to root to change parent node
 			while(base.getKeyListSize() > 2) {
+				//Make subBtree
+				//Subtree Root
 				MyThreeWayBTreeNode newRoot = new MyThreeWayBTreeNode();
 				newRoot.setKey(base.getKeyList().get(1));
 				newRoot.setParent(base.getParent());
 				
+				//Subtree Child_1
 				MyThreeWayBTreeNode node_1 = new MyThreeWayBTreeNode();
 				node_1.setKey(base.getKeyList().get(0));
 				node_1.setParent(newRoot);
 				
+				//Subtree Child_2
 				MyThreeWayBTreeNode node_2 = new MyThreeWayBTreeNode();
 				node_2.setKey(base.getKeyList().get(2));
 				node_2.setParent(newRoot);
 				
+				//Children that need to be attached to subtree children
 				if(!base.getChildrenList().isEmpty()) {
 					node_1.setChildren(base.getChildrenList().get(0));
 					node_1.setChildren(base.getChildrenList().get(1));
@@ -235,22 +245,120 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			else base = base.getChildrenList().get(i);
 		}
 		
-		while(true) {
-			MyThreeWayBTreeNode parent = base.getParent();
-			if(base.getChildrenList().isEmpty()) {
-				if(base.getKeyListSize() > Math.floor(3/2)) {
-					base.getKeyList().remove(key); break;
-				}
-				else {
-					
-				}
+		if(base.getChildrenList().isEmpty()) {
+			base.getKeyList().remove(key);
+		}
+		else {
+			int index = base.getKeyList().indexOf(key);
+			MyThreeWayBTreeNode lessBase = base.getChildrenList().get(index);
+			MyThreeWayBTreeNode bigBase = base.getChildrenList().get(index + 1);
+			while(!lessBase.getChildrenList().isEmpty()) {
+				lessBase = lessBase.getChildrenList().get(lessBase.getChildrenListSize() - 1);
+			}
+			while(!bigBase.getChildrenList().isEmpty()) {
+				bigBase = bigBase.getChildrenList().get(bigBase.getChildrenListSize() - 1);
+			}
+			
+			base.getKeyList().remove(key);
+			
+			if(lessBase.getKeyListSize() > Math.floor(3/2)) {
+				base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
+				lessBase.getKeyList().remove(lessBase.getKeyListSize() - 1);
+				base = lessBase;
+			}
+			else if(bigBase.getKeyListSize() > Math.floor(3/2)) {
+				base.setKey(bigBase.getKeyList().get(0));
+				bigBase.getKeyList().remove(0);
+				base = bigBase;
 			}
 			else {
+				base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
+				lessBase.getKeyList().remove(lessBase.getKeyListSize() - 1);
+				base = lessBase;
+			}
+		}
+		
+		
+		
+		while(base != null) {
+			MyThreeWayBTreeNode parent = base.getParent();
+			if(base.getKeyListSize() < 1) {
+				if(parent == null) {
+					if(!base.getChildrenList().isEmpty()) {
+						base.getChildrenList().get(0).setParent(base.getParent());
+						root = base.getChildrenList().get(0);
+					}
+					break;
+				}
 				
+				//FIXME Implement merge function
+				MyThreeWayBTreeNode sibling = null;
+				for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
+					if(base.isSibling(node) && (node.getKeyListSize() > Math.floor(3/2))) {
+						sibling = node; break;
+					}
+				}
+				
+				int indexBase = parent.getChildrenList().indexOf(base);
+				
+				if(sibling == null) {
+					//System.out.println("Merge operation engaged!");
+					
+					if(indexBase >= 1) {
+						parent.getChildrenList().get(indexBase - 1).setKey(parent.getKeyList().get(indexBase - 1));
+						parent.getKeyList().remove(indexBase - 1);
+						if(!base.getChildrenList().isEmpty()) {
+							base.getChildrenList().stream().forEach(node->{
+								node.setParent(parent.getChildrenList().get(indexBase - 1));
+								parent.getChildrenList().get(indexBase - 1).setChildren(node);
+							});
+						}
+						parent.getChildrenList().remove(base);
+					}
+					else {
+						parent.getChildrenList().get(indexBase + 1).setKey(parent.getKeyList().get(indexBase));
+						parent.getKeyList().remove(indexBase);
+						if(!base.getChildrenList().isEmpty()) {
+							base.getChildrenList().stream().forEach(node->{
+								node.setParent(parent.getChildrenList().get(indexBase + 1));
+								parent.getChildrenList().get(indexBase + 1).setChildren(node);
+							});
+						}
+						parent.getChildrenList().remove(base);
+					}
+				}
+				else {
+					//System.out.println("Switch operation engaged!");
+					
+					int indexSibling = parent.getChildrenList().indexOf(sibling);
+					if(indexBase > indexSibling) {
+						base.setKey(parent.getKeyList().get(indexSibling));
+						parent.getKeyList().remove(indexSibling);
+						parent.setKey(sibling.getKeyList().get(sibling.getKeyListSize() - 1));
+						sibling.getKeyList().remove(sibling.getKeyListSize() - 1);
+						if(!sibling.getChildrenList().isEmpty()) {
+							MyThreeWayBTreeNode children = sibling.getChildrenList().get(sibling.getChildrenListSize() - 1);
+							children.setParent(base);
+							base.setChildren(children);
+							sibling.getChildrenList().remove(sibling.getChildrenListSize() - 1);
+						}
+					}
+					else {
+						base.setKey(parent.getKeyList().get(indexBase));
+						parent.getKeyList().remove(indexBase);
+						parent.setKey(sibling.getKeyList().get(0));
+						sibling.getKeyList().remove(0);
+						if(!sibling.getChildrenList().isEmpty()) {
+							MyThreeWayBTreeNode children = sibling.getChildrenList().get(0);
+							children.setParent(base);
+							base.setChildren(children);
+							sibling.getChildrenList().remove(0);
+						}
+					}
+				}
 			}
 			base = parent;
 		}
-		
 		return true;
 	}
 
