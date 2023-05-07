@@ -186,13 +186,15 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				node_2.setKey(base.getKeyList().get(2));
 				node_2.setParent(newRoot);
 				
-				//Children that need to be attached to subtree children
+				//Children that need to be attached to subtree children if base does have children
 				if(!base.getChildrenList().isEmpty()) {
+					//Setting Child_1 children
 					node_1.setChildren(base.getChildrenList().get(0));
 					node_1.setChildren(base.getChildrenList().get(1));
 					node_1.getChildrenList().stream().forEach(node->{
 						node.setParent(node_1);
 					});
+					//Setting Child_2 children
 					node_2.setChildren(base.getChildrenList().get(2));
 					node_2.setChildren(base.getChildrenList().get(3));
 					node_2.getChildrenList().stream().forEach(node->{
@@ -200,9 +202,11 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 					});
 				}
 				
+				//Attach Child_1, Child_2 to subtree root
 				newRoot.setChildren(node_1);
 				newRoot.setChildren(node_2);
 				
+				//Rebase the parent of base
 				MyThreeWayBTreeNode parent = base.getParent();
 				if(parent == null){root = newRoot; break;}
 				else {
@@ -234,6 +238,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 		MyThreeWayBTreeNode base = root;
 		Number key = (Number)o;
 		
+		//Find the base that needs to be removed
 		Outter:while(true) {
 			int i = 0;
 			for(Integer val : base.getKeyList()) {
@@ -245,11 +250,15 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			else base = base.getChildrenList().get(i);
 		}
 		
+		//Remove the key and change the base if it is internal
 		if(base.getChildrenList().isEmpty()) {
 			base.getKeyList().remove(key);
 		}
 		else {
+			//Get the index of base
 			int index = base.getKeyList().indexOf(key);
+			
+			//Get lower value of base, Get higher value of base
 			MyThreeWayBTreeNode lessBase = base.getChildrenList().get(index);
 			MyThreeWayBTreeNode bigBase = base.getChildrenList().get(index + 1);
 			while(!lessBase.getChildrenList().isEmpty()) {
@@ -259,8 +268,10 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				bigBase = bigBase.getChildrenList().get(bigBase.getChildrenListSize() - 1);
 			}
 			
+			//Remove key from base
 			base.getKeyList().remove(key);
 			
+			//Switch base key to lower val or higher val
 			if(lessBase.getKeyListSize() > Math.floor(3/2)) {
 				base.setKey(lessBase.getKeyList().get(lessBase.getKeyListSize() - 1));
 				lessBase.getKeyList().remove(lessBase.getKeyListSize() - 1);
@@ -278,11 +289,14 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 			}
 		}
 		
-		
-		
+		//Refactor the base and its parent
+		//Use loop to change the parent of base
 		while(base != null) {
 			MyThreeWayBTreeNode parent = base.getParent();
+			
+			//When base violates keysize refactor base
 			if(base.getKeyListSize() < 1) {
+				//When base is root relocate the root to base
 				if(parent == null) {
 					if(!base.getChildrenList().isEmpty()) {
 						base.getChildrenList().get(0).setParent(base.getParent());
@@ -291,7 +305,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 					break;
 				}
 				
-				//FIXME Implement merge function
+				//Find sibling node if exists
 				MyThreeWayBTreeNode sibling = null;
 				for(MyThreeWayBTreeNode node : parent.getChildrenList()) {
 					if(base.isSibling(node) && (node.getKeyListSize() > Math.floor(3/2))) {
@@ -304,6 +318,9 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				if(sibling == null) {
 					//System.out.println("Merge operation engaged!");
 					
+					//If sibling does not exist do merge operation
+					
+					//Merging nodes based on index of base
 					if(indexBase >= 1) {
 						parent.getChildrenList().get(indexBase - 1).setKey(parent.getKeyList().get(indexBase - 1));
 						parent.getKeyList().remove(indexBase - 1);
@@ -330,7 +347,11 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 				else {
 					//System.out.println("Switch operation engaged!");
 					
+					//If sibling does exist do switch operation
+					
 					int indexSibling = parent.getChildrenList().indexOf(sibling);
+					
+					//Switch key of nodes based on diff between index of sibling and index of base
 					if(indexBase > indexSibling) {
 						base.setKey(parent.getKeyList().get(indexSibling));
 						parent.getKeyList().remove(indexSibling);
