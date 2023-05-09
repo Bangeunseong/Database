@@ -817,7 +817,7 @@ public final class Calculator extends JFrame {
 						scaleOfLength_S.stream().forEach(data->{comboBoxA.addItem(data); comboBoxB.addItem(data);});
 						comboBoxA.setSelectedIndex(0); comboBoxB.setSelectedIndex(0);
 						inputTextField_B.setText(String.valueOf(UnitConverter.mainMemory_Unit));
-						for(int i = 0;i < scaleOfLength_S.size();i++) {
+						for(int i = 0; i < scaleOfLength_S.size();i++) {
 							JTextField tmp = new JTextField();
 							tmp.setEditable(false);
 							tmp.setBorder(new TitledBorder(new LineBorder(Color.BLACK), scaleOfLength_S.get(i)));
