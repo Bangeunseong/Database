@@ -188,41 +188,7 @@ public class MyThreeWayBTree implements NavigableSet<Integer> {
 	//Remove element
 	@Override
 	public boolean remove(Object o) {
-		if(o instanceof Number) {
-			Number key = (Number)o;
-			MyThreeWayBTreeNode base = root;
-			Outter:while(true) {
-				int i = 0;
-				for(Integer val : base.getKeyList()) {
-					if(key.intValue() < val.intValue()) break;
-					else if(val.intValue() == key.intValue()) break Outter;
-					else i++;
-				}
-				try {base = base.getChildrenList().get(i);}
-				catch(IndexOutOfBoundsException e) {return false;}
-			}
-			System.out.println(base.getKeyList());
-			//TODO Make remove function below
-			if(base.getKeyListSize() > Math.floor(3/2)) {
-				if(base.getChildrenList().isEmpty()) base.getKeyList().remove(key);
-				else {
-					//TODO Make remove algorithm when base has children but has more than 1 key
-					
-				}
-			}
-			else{
-				int index = 0;
-				for(Integer val : base.getKeyList()) {
-					if(val.intValue() == key.intValue()) break;
-					index++;
-				}
-				//TODO Make remove algorithm when base has less than 1 key
-				
-				
-			}
-			return true;
-		}
-		else return false;
+		
 	}
 
 	@Override
