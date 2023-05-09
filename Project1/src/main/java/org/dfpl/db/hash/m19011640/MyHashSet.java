@@ -1,8 +1,10 @@
 package org.dfpl.db.hash.m19011640;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 public class MyHashSet implements Set<Integer> {
@@ -155,8 +157,20 @@ public class MyHashSet implements Set<Integer> {
 	
 	@Override
 	public boolean retainAll(Collection<?> c) {
-		// TODO Auto-generated method stub
-		return false;
+		List<Integer>[] keyList = new ArrayList[3];
+		for(Object key : c) {
+			if(key instanceof Number) {
+				Number val = (Number)key;
+				keyList[val.intValue()%3].add(val.intValue());
+			}
+			return false;
+		}
+		
+		int i = 0, cnt = 0;
+		for(MyThreeWayBTree bTree : hashTable) {
+			if(bTree.retainAll(keyList[i++])) cnt++;
+		}
+		return cnt > 0 ? true : false;
 	}
 
 	@Override
