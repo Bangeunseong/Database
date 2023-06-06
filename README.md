@@ -1,5 +1,5 @@
-# Database(This rep. is made for educational purpose.)
-
+# Database
+<h4>(This rep. is made for educational purpose.)</h4>
 <h2>1. Basic Tutorials how to use java</h2>
 <div>
   <p>
