@@ -1,4 +1,4 @@
-# Database
+# Database(This rep. is made for educational purpose.)
 
 <h2>1. Basic Tutorials how to use java</h2>
 <div>
