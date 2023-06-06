@@ -13,8 +13,30 @@
   <p>
     I recently learned about B-Tree and made a basic 3-way B-Tree.
     <br>
+    You can add integer variables into B-Tree and delete from it efficiently.
+    <br>
+    You will learn why it is efficient by inserting thousands or millions of variables and deleting them.
+    <br>
     Feel free to use my source code to learn about B-Tree.
     <br>
     Source code is located in org/dfpl/db/hash/m19011640
   </p>
+</div>
+<br>
+<h2>Notice</h2>
+<div>
+  <h3>How to compile a java file?</h3>
+  <ol>
+    <li><p>Download latest JDK library</p></li>
+    <li>
+      <p>If you use eclipse, Set java library that you downloaded
+      <br>If you use vscode, Set library path to downloaded java library folder and install additional java extensions
+      </p>
+    </li>
+    <li>
+      <p>Press ctrl+F11 to compile and execute in eclipse
+      <br>Press ctrl+F5 to compile and execute in vscode
+      </p>
+    </li>
+  </ol>
 </div>
