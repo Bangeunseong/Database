@@ -989,7 +989,6 @@ public final class Calculator extends JFrame {
 	//Main
 	public static void main(String[] args) {
 		new Calculator();
-		
 	}
 	
 }
